@@ -1,7 +1,12 @@
 "use client";
 
 import { useId, useState } from "react";
+import Link from "next/link";
 import { SectionHead } from "@/components/ui/SectionHead";
+import type { Locale } from "@/lib/i18n/config";
+import { makeT } from "@/lib/i18n/dict";
+import { href } from "@/lib/i18n/routes";
+import { FARM } from "@/content/farm";
 
 /**
  * Poptávkový formulář. Jeden komponent pro školy, pronájem, bleší trh
@@ -35,6 +40,7 @@ const INPUT =
 
 export function InquiryForm({
   kind,
+  locale,
   title,
   lead,
   plate,
@@ -42,6 +48,7 @@ export function InquiryForm({
   submitLabel,
 }: {
   kind: InquiryKind;
+  locale: Locale;
   title: string;
   lead?: string;
   /** Číslo tabule, aby formulář zapadl do číslování sekcí na stránce. */
@@ -49,6 +56,7 @@ export function InquiryForm({
   fields?: InquiryFields;
   submitLabel: string;
 }) {
+  const t = makeT(locale);
   const uid = useId();
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
@@ -72,17 +80,17 @@ export function InquiryForm({
 
     if (!name || !email) {
       setStatus("error");
-      setError("Vyplňte prosím jméno a e-mail.");
+      setError(t("formErrNameEmail"));
       return;
     }
     if (!email.includes("@") || !email.includes(".")) {
       setStatus("error");
-      setError("E-mail nevypadá správně. Zkontrolujte ho prosím.");
+      setError(t("formErrEmail"));
       return;
     }
     if (fields.radio && !data.get("choice")) {
       setStatus("error");
-      setError("Vyberte prosím jednu z možností.");
+      setError(t("formErrChoice"));
       return;
     }
 
@@ -95,6 +103,7 @@ export function InquiryForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           kind,
+          locale,
           name,
           email,
           phone: String(data.get("phone") ?? "").trim() || null,
@@ -111,9 +120,7 @@ export function InquiryForm({
       setStatus("ok");
     } catch {
       setStatus("error");
-      setError(
-        "Odeslání se nepovedlo. Zkuste to prosím znovu, nebo nám zavolejte na 776 815 332.",
-      );
+      setError(`${t("formErrSendPhone")} ${FARM.phoneHuman}.`);
     }
   }
 
@@ -141,7 +148,7 @@ export function InquiryForm({
           <form noValidate onSubmit={onSubmit} className="max-w-2xl">
             {/* Honeypot. Skrytý pro oči i pro čtečky, ale robot ho vidí. */}
             <div className="sr-only" aria-hidden="true">
-              <label htmlFor={id("web")}>Nechte prázdné</label>
+              <label htmlFor={id("web")}>{t("formLeaveEmpty")}</label>
               <input
                 id={id("web")}
                 name="web"
@@ -154,7 +161,7 @@ export function InquiryForm({
             <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
               <div className={fields.phone ? undefined : "sm:col-span-2"}>
                 <label htmlFor={id("name")} className={LABEL}>
-                  Jméno a příjmení
+                  {t("formNameFull")}
                 </label>
                 <input
                   id={id("name")}
@@ -169,7 +176,7 @@ export function InquiryForm({
 
               <div>
                 <label htmlFor={id("email")} className={LABEL}>
-                  E-mail
+                  {t("formEmail")}
                 </label>
                 <input
                   id={id("email")}
@@ -185,7 +192,7 @@ export function InquiryForm({
               {fields.phone && (
                 <div>
                   <label htmlFor={id("phone")} className={LABEL}>
-                    Telefon
+                    {t("formPhone")}
                   </label>
                   <input
                     id={id("phone")}
@@ -298,16 +305,16 @@ export function InquiryForm({
                 disabled={pending}
                 className="rounded-full bg-ink px-7 py-3.5 text-paper transition-colors hover:bg-ember disabled:cursor-progress disabled:opacity-60"
               >
-                {pending ? "Odesílám…" : submitLabel}
+                {pending ? t("formSending") : submitLabel}
               </button>
               <p className="max-w-xs text-[0.82rem] leading-relaxed text-ink-faint">
-                Odesláním souhlasíte se zpracováním údajů podle{" "}
-                <a
-                  href="/ochrana-soukromi"
+                {t("formGdprPrefix")}{" "}
+                <Link
+                  href={href("privacy", locale)}
                   className="border-b border-pumpkin/50 text-pumpkin transition-colors hover:border-pumpkin"
                 >
-                  pravidel ochrany soukromí
-                </a>
+                  {t("formGdprLink")}
+                </Link>
                 .
               </p>
             </div>
@@ -320,8 +327,7 @@ export function InquiryForm({
                 status === "error" ? "text-ember" : "text-moss"
               }`}
             >
-              {status === "ok" &&
-                "Děkujeme, máme to. Ozveme se vám e-mailem nebo telefonem."}
+              {status === "ok" && t("formOkLong")}
               {status === "error" && error}
             </p>
           </form>

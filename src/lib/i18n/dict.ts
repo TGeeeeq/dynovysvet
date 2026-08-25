@@ -66,6 +66,43 @@ export const dict = {
     en: "Sending failed. Please try again, or give us a call.",
     de: "Das Senden ist fehlgeschlagen. Bitte versuchen Sie es erneut oder rufen Sie uns an.",
   },
+  formNameFull: { cs: "Jméno a příjmení", en: "Full name", de: "Vor- und Nachname" },
+  formLeaveEmpty: { cs: "Nechte prázdné", en: "Leave empty", de: "Leer lassen" },
+  formErrNameEmail: {
+    cs: "Vyplňte prosím jméno a e-mail.",
+    en: "Please fill in your name and email.",
+    de: "Bitte geben Sie Name und E-Mail an.",
+  },
+  formErrEmail: {
+    cs: "E-mail nevypadá správně. Zkontrolujte ho prosím.",
+    en: "That email does not look right. Please check it.",
+    de: "Die E-Mail-Adresse sieht nicht richtig aus. Bitte prüfen Sie sie.",
+  },
+  formErrChoice: {
+    cs: "Vyberte prosím jednu z možností.",
+    en: "Please pick one of the options.",
+    de: "Bitte wählen Sie eine der Möglichkeiten.",
+  },
+  formErrSendPhone: {
+    cs: "Odeslání se nepovedlo. Zkuste to prosím znovu, nebo nám zavolejte na",
+    en: "Sending failed. Please try again, or call us on",
+    de: "Das Senden ist fehlgeschlagen. Bitte erneut versuchen oder rufen Sie uns an unter",
+  },
+  formOkLong: {
+    cs: "Děkujeme, máme to. Ozveme se vám e-mailem nebo telefonem.",
+    en: "Thank you, we have it. We will get back to you by email or phone.",
+    de: "Vielen Dank, wir haben Ihre Anfrage. Wir melden uns per E-Mail oder Telefon.",
+  },
+  formGdprPrefix: {
+    cs: "Odesláním souhlasíte se zpracováním údajů podle",
+    en: "By sending you agree to your data being processed under our",
+    de: "Mit dem Absenden stimmen Sie der Verarbeitung Ihrer Daten gemäß unserer",
+  },
+  formGdprLink: {
+    cs: "pravidel ochrany soukromí",
+    en: "privacy policy",
+    de: "Datenschutzrichtlinie",
+  },
   formGdpr: {
     cs: "Odesláním souhlasíte se zpracováním údajů pro vyřízení poptávky.",
     en: "By sending you agree to your data being processed to handle this enquiry.",

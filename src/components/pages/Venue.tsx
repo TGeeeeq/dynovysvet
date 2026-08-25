@@ -5,41 +5,23 @@ import { InquiryForm } from "@/components/ui/InquiryForm";
 import { PhotoStrip } from "@/components/ui/PhotoStrip";
 import { VENUE_PHOTOS } from "@/content/photos";
 import { FARM } from "@/content/farm";
-
-
-const SPACES = [
-  {
-    name: "Restaurace",
-    text: "Vybavená, s kuchyňským a sociálním zázemím. Vytápěná, takže funguje celoročně.",
-  },
-  {
-    name: "Uzavřený dvůr",
-    text: "Prostorný a soukromý. Kolem něj toalety včetně bezbariérové.",
-  },
-  {
-    name: "Stodola",
-    text: "Krytý prostor i s patrem. V sezóně v ní stojí slámohrad.",
-  },
-  {
-    name: "Zahrada",
-    text: "Se stylovými dřevěnými a slaměnými atrakcemi. Pro oslavu s dětmi to bývá hlavní důvod, proč sem lidé jezdí.",
-  },
-] as const;
+import { VENUE, VENUE_SPACES } from "@/content/copy/venue";
+import { copyFor } from "@/content/copy/types";
 
 export function Venue({ locale }: PageProps) {
+  const c = copyFor(VENUE, locale);
+
   return (
     <>
       <section className="mx-auto max-w-[88rem] px-5 pb-14 pt-12 sm:px-8">
         <p className="tabular text-[0.76rem] uppercase tracking-[0.34em] text-pumpkin">
-          Svatby · oslavy · firemní akce
+          {c("kicker")}
         </p>
         <h1 className="font-display letterpress mt-5 max-w-4xl text-balance text-[clamp(2.4rem,7vw,5.4rem)] font-semibold">
-          Statek si můžete pronajmout
+          {c("title")}
         </h1>
         <p className="mt-6 max-w-2xl text-pretty text-xl leading-relaxed text-ink-soft">
-          Nabízíme prostory Statku u Pipků k pořádání svateb, oslav a podobných
-          soukromých či firemních akcí. Můžete využít vybavenou restauraci,
-          uzavřený dvůr, stodolu i zahradu.
+          {c("lead")}
         </p>
       </section>
 
@@ -47,16 +29,16 @@ export function Venue({ locale }: PageProps) {
 
       <section className="bg-paper-deep">
         <div className="mx-auto max-w-[88rem] px-5 py-20 sm:px-8">
-          <SectionHead plate="I" title="Co je k dispozici" />
+          <SectionHead plate="I" title={c("spacesTitle")} />
           <div className="mt-12 grid gap-x-10 gap-y-10 sm:grid-cols-2">
-            {SPACES.map((s, i) => (
-              <article key={s.name}>
+            {VENUE_SPACES.map((sp, i) => (
+              <article key={sp.name.cs}>
                 <p className="tabular text-[0.72rem] text-pumpkin">
                   {String(i + 1).padStart(2, "0")}
                 </p>
                 <hr className="rule-hand my-3" />
-                <h3 className="font-display text-2xl font-semibold">{s.name}</h3>
-                <p className="mt-2 text-pretty leading-relaxed text-ink-soft">{s.text}</p>
+                <h3 className="font-display text-2xl font-semibold">{sp.name[locale]}</h3>
+                <p className="mt-2 text-pretty leading-relaxed text-ink-soft">{sp.text[locale]}</p>
               </article>
             ))}
           </div>
@@ -69,25 +51,23 @@ export function Venue({ locale }: PageProps) {
       </section>
 
       <InquiryForm
-            kind="pronajem"
-            plate="II"
-            title="Poptávka pořádání akce"
-            lead="Napište nám, o jakou akci jde a jaký bude předběžný počet účastníků. Ozveme se co nejdřív zpátky."
-            fields={{
-              phone: true,
-              date: { label: "Předběžný termín akce" },
-              radio: { legend: "Mám zájem o", options: ["Konzultaci", "Cenovou nabídku"] },
-              message: {
-                label: "Zpráva",
-                hint: "O jakou akci se jedná a kolik lidí přibližně přijede.",
-              },
-            }}
-        submitLabel="Poptat"
+        kind="pronajem"
+        locale={locale}
+        plate="II"
+        title={c("formTitle")}
+        lead={c("formLead")}
+        fields={{
+          phone: true,
+          date: { label: c("formDateLabel") },
+          radio: { legend: c("formRadioLegend"), options: [c("formOption1"), c("formOption2")] },
+          message: { label: c("formMessageLabel"), hint: c("formMessageHint") },
+        }}
+        submitLabel={c("formSubmit")}
       />
 
       <section className="mx-auto max-w-[88rem] px-5 py-12 sm:px-8">
         <p className="tabular text-[0.88rem] text-ink-faint">
-          Nebo rovnou zavolejte: {FARM.phoneHuman}
+          {c("orCall")}: {FARM.phoneHuman}
         </p>
       </section>
     </>
