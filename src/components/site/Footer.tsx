@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Stamp } from "./Stamp";
+import { AFLogo } from "./AFLogo";
 import { FARM } from "@/content/farm";
 
 export function Footer() {
@@ -77,14 +78,29 @@ export function Footer() {
       </div>
 
       <div className="border-t border-ink/10">
-        <div className="mx-auto flex max-w-[88rem] flex-wrap items-center gap-x-6 gap-y-2 px-5 py-5 text-[0.8rem] text-ink-faint sm:px-8">
+        <div className="mx-auto flex max-w-[88rem] flex-wrap items-center gap-x-6 gap-y-3 px-5 py-5 text-[0.8rem] text-ink-faint sm:px-8">
           <p>© {new Date().getFullYear()} {FARM.name}</p>
-          <p className="ml-auto">
+          <p>
             Spolupracujeme:{" "}
             <a href="https://www.kudyznudy.cz/" className="underline underline-offset-4" rel="noreferrer noopener" target="_blank">Kudy z nudy</a>
             {" · "}
             <a href="https://www.szif.cz" className="underline underline-offset-4" rel="noreferrer noopener" target="_blank">Program rozvoje venkova</a>
           </p>
+          <a
+            href="https://www.antoninfigueroa.cz"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group ml-auto inline-flex items-center gap-2.5 text-ink-faint transition-colors hover:text-ink"
+          >
+            <AFLogo
+              size={30}
+              className="ring-1 ring-[#d4a45a]/20 transition duration-500 ease-out group-hover:scale-105 group-hover:ring-[#d4a45a]/45 group-hover:shadow-[0_0_18px_rgba(212,164,90,0.25)]"
+            />
+            <span>
+              Web vytvořil{" "}
+              <span className="font-display tracking-wide">Antonín Figueroa</span>
+            </span>
+          </a>
         </div>
       </div>
     </footer>

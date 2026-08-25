@@ -202,3 +202,32 @@
   .vine-stem { stroke-dashoffset: 0; }
   .vine-part { scale: 1; opacity: 1; }
 }
+
+/* =========================================================
+   AF signature — creator credit stamp (viz AFLogo.tsx).
+   transform-box: view-box drží 50% 50% na středu viewBoxu (50,50),
+   takže se prstence otáčejí kolem skutečného středu a neviklají se.
+   ========================================================= */
+.af-spin-slow,
+.af-spin-rev {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+}
+@keyframes af-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes af-spin-rev {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .af-spin-slow {
+    animation: af-spin 34s linear infinite;
+  }
+  .af-spin-rev {
+    animation: af-spin-rev 27s linear infinite;
+  }
+}
