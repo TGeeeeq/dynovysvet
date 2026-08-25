@@ -60,7 +60,7 @@ export default async function SiteLayout({ children, params }: LayoutProps<"/[lo
             vedle obsahu skutečně volný okraj. Přes text by to byla čmára.
             `left` ho zarovná těsně vlevo od kontejneru o šířce 88rem. */}
         <VineSpine className="pointer-events-none absolute top-44 hidden w-20 left-[max(0.25rem,calc(50%-49rem))] min-[1560px]:block" />
-        <FarmJsonLd />
+        <FarmJsonLd locale={locale} />
         <Header locale={locale} />
         <main id="obsah" className="flex-1">
           {children}

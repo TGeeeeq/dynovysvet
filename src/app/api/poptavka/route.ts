@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getDb, hasDatabaseUrl, schema } from "@/lib/db/client";
 import { FARM } from "@/content/farm";
+import { rateLimit } from "@/lib/security/rate-limit";
+import { LOCALES } from "@/lib/i18n/config";
 
 /**
  * Příjem poptávkových formulářů (školy, pronájem, bleší trh, obecný dotaz).
@@ -15,6 +17,7 @@ export const runtime = "nodejs";
 
 const Body = z.object({
   kind: z.enum(["skola", "pronajem", "blesi_trh", "obecny"]),
+  locale: z.enum(LOCALES).default("cs"),
   name: z.string().trim().min(2).max(120),
   email: z.email().max(200),
   phone: z.string().trim().max(40).nullish(),
@@ -34,6 +37,21 @@ const SUBJECTS: Record<z.infer<typeof Body>["kind"], string> = {
 };
 
 export async function POST(request: Request) {
+  // Hrubá brzda proti zaplavení schránky. In-memory limiter je na serverless
+  // jen per-instance, ale robota, který tluče ze stejného spojení, zastaví;
+  // pomalejší útok chytne honeypot a ruční kontrola v administraci.
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    request.headers.get("x-real-ip") ??
+    "neznama";
+  const gate = rateLimit(`poptavka:${ip}`, 5, 600);
+  if (!gate.allowed) {
+    return NextResponse.json(
+      { error: "Příliš mnoho pokusů. Zkuste to prosím za chvíli." },
+      { status: 429, headers: { "Retry-After": String(gate.retryAfterSeconds) } },
+    );
+  }
+
   let parsed;
   try {
     parsed = Body.parse(await request.json());
@@ -50,6 +68,8 @@ export async function POST(request: Request) {
   const extra: Record<string, unknown> = {};
   if (parsed.choice) extra.choice = parsed.choice;
   if (parsed.options?.length) extra.options = parsed.options;
+  // Jazyk, ve kterém poptávka přišla — majitel má odpovídat stejným.
+  extra.locale = parsed.locale;
 
   if (hasDatabaseUrl()) {
     try {
@@ -93,6 +113,7 @@ async function notify(data: z.infer<typeof Body>, extra: Record<string, unknown>
     data.date && `Termín: ${data.date}`,
     extra.choice && `Volba: ${extra.choice}`,
     Array.isArray(extra.options) && `Volby: ${extra.options.join(", ")}`,
+    `Jazyk: ${data.locale}`,
     data.message && `\n${data.message}`,
   ].filter(Boolean);
 

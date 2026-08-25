@@ -10,6 +10,15 @@ export interface Photo {
   height: number;
 }
 
+/** Zdrojový záznam fotky: alt i popisek jsou ve všech třech jazycích. */
+export interface PhotoSource {
+  base: string;
+  alt: Record<"cs" | "en" | "de", string>;
+  caption?: Record<"cs" | "en" | "de", string>;
+  width: number;
+  height: number;
+}
+
 /**
  * Pás fotek ze statku.
  *

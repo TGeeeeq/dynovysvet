@@ -1,5 +1,7 @@
 import { FARM } from "@/content/farm";
 import { SEASON_2026, TICKET_TYPES } from "@/lib/tickets/schedule";
+import { HTML_LANG, type Locale } from "@/lib/i18n/config";
+import { href } from "@/lib/i18n/routes";
 
 const BASE = "https://www.dynovysvet.cz";
 
@@ -28,7 +30,15 @@ const place = {
   },
 };
 
-export function FarmJsonLd() {
+/** Popis akce ve třech jazycích — Google čte `inLanguage` a podle něj páruje. */
+const EVENT_DESCRIPTION: Record<Locale, string> = {
+  cs: "Výstava pěstovaných odrůd dýní, slámohrad a slámobazén ve stodole, hospodářská zvířata a přírodní hřiště v zahradě statku.",
+  en: "An exhibition of the pumpkin varieties grown here, a straw castle and straw pool in the barn, farm animals and a natural playground in the garden.",
+  de: "Ausstellung der hier angebauten Kürbissorten, Strohburg und Strohbad in der Scheune, Nutztiere und ein Naturspielplatz im Garten.",
+};
+
+export function FarmJsonLd({ locale }: { locale: Locale }) {
+  const ticketsUrl = `${BASE}${href("tickets", locale)}`;
   const data = {
     "@context": "https://schema.org",
     "@graph": [
@@ -37,7 +47,7 @@ export function FarmJsonLd() {
         "@id": `${BASE}/#statek`,
         name: FARM.name,
         alternateName: FARM.event,
-        url: BASE,
+        url: `${BASE}${href("home", locale)}`,
         telephone: FARM.phone,
         email: FARM.email,
         sameAs: [FARM.facebook],
@@ -51,9 +61,9 @@ export function FarmJsonLd() {
       {
         "@type": "Event",
         "@id": `${BASE}/dynovy-svet#akce`,
+        inLanguage: HTML_LANG[locale],
         name: `${FARM.event} ${new Date(SEASON_2026.from).getFullYear()}`,
-        description:
-          "Výstava pěstovaných odrůd dýní, slámohrad a slámobazén ve stodole, hospodářská zvířata a přírodní hřiště v zahradě statku.",
+        description: EVENT_DESCRIPTION[locale],
         startDate: SEASON_2026.from,
         endDate: SEASON_2026.to,
         eventStatus: "https://schema.org/EventScheduled",
@@ -64,10 +74,10 @@ export function FarmJsonLd() {
         // Ceny bez slev; typy vstupenek jsou jednotlivé nabídky.
         offers: TICKET_TYPES.filter((t) => t.price > 0).map((t) => ({
           "@type": "Offer",
-          name: t.name,
+          name: t.name[locale],
           price: t.price,
           priceCurrency: "CZK",
-          url: `${BASE}/vstupenky`,
+          url: ticketsUrl,
           availability: "https://schema.org/InStock",
           validFrom: SEASON_2026.from,
         })),

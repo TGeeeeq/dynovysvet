@@ -7,7 +7,7 @@ import { TornEdge } from "@/components/ui/TornEdge";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { PhotoStrip } from "@/components/ui/PhotoStrip";
 import { animalsFor, attractionsFor, FARM, practicalFor, rulesFor } from "@/content/farm";
-import { FARM_PHOTOS } from "@/content/photos";
+import { farmPhotos } from "@/content/photos";
 import { moodAt, nextPumpkinOpening } from "@/lib/season";
 import { HOME } from "@/content/copy/home";
 import { copyFor } from "@/content/copy/types";
@@ -141,7 +141,7 @@ export function Home({ locale }: PageProps) {
             {c("photosLabel")}
           </p>
         </div>
-        <PhotoStrip photos={FARM_PHOTOS} className="mt-8 mx-auto max-w-[88rem]" />
+        <PhotoStrip photos={farmPhotos(locale)} className="mt-8 mx-auto max-w-[88rem]" />
       </section>
 
       {/* ── Odrůdy ───────────────────────────────────────────────────────

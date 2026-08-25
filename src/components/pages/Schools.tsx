@@ -3,7 +3,7 @@ import { SectionHead } from "@/components/ui/SectionHead";
 import { TornEdge } from "@/components/ui/TornEdge";
 import { InquiryForm } from "@/components/ui/InquiryForm";
 import { PhotoStrip } from "@/components/ui/PhotoStrip";
-import { FOREST_PHOTOS } from "@/content/photos";
+import { forestPhotos } from "@/content/photos";
 import { GourdPlate } from "@/components/illustrations/Gourd";
 import { GOURD_BY_SLUG } from "@/lib/illustrations/gourds";
 import { FARM } from "@/content/farm";
@@ -76,7 +76,7 @@ export function Schools({ locale }: PageProps) {
       </section>
 
       <section className="py-16">
-        <PhotoStrip photos={FOREST_PHOTOS} className="mx-auto max-w-[88rem]" />
+        <PhotoStrip photos={forestPhotos(locale)} className="mx-auto max-w-[88rem]" />
       </section>
 
       {/* ── Praktické informace ─────────────────────────────────────── */}
