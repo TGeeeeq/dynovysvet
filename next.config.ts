@@ -43,7 +43,64 @@ const OLD_TO_ROUTE: Record<string, RouteKey> = {
   "/cart": "tickets",
 };
 
+/**
+ * Bezpečnostní hlavičky pro veřejný web.
+ *
+ * Proč tady a ne ve `vercel.json`: Vercel je zatím jen zkušební provoz.
+ * Hlavičky, na kterých závisí bezpečnost webu, nesmí zmizet jen proto, že
+ * se přesuneme jinam — v konfiguraci Nextu jedou všude stejně.
+ *
+ * CSP je pro veřejné stránky **bez nonce**, a je to vědomé rozhodnutí:
+ * nonce se musí lišit request od requestu, což by celý statický web donutilo
+ * generovat se na každý požadavek. V den otevření registrací je to přesně to,
+ * co si nemůžeme dovolit. Veřejné stránky přitom nikde nevykreslují cizí
+ * HTML (žádné `dangerouslySetInnerHTML` nad uživatelským vstupem, React
+ * escapuje sám), takže hlavní přínos nonce — zastavit vložený skript — tu
+ * nemá co chránit. Administrace, kde je v sázce přihlašovací cookie a kde se
+ * edituje obsah, dostává v `src/proxy.ts` ostré CSP s nonce; dynamická je tak
+ * jako tak.
+ */
+const CSP = [
+  "default-src 'self'",
+  // 'unsafe-inline' kvůli inline bootstrapu Nextu; viz komentář výše.
+  "script-src 'self' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob:",
+  // Písma si Next stahuje při buildu k sobě, cizí doména není potřeba.
+  "font-src 'self' data:",
+  "connect-src 'self'",
+  // Mapa na stránce Kontakt. OpenStreetMap místo Google Maps i proto,
+  // že nesleduje návštěvníky a nekomplikuje souhlas s cookies.
+  "frame-src https://www.openstreetmap.org",
+  "object-src 'none'",
+  "base-uri 'none'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+  "upgrade-insecure-requests",
+].join("; ");
+
+const SECURITY_HEADERS = [
+  { key: "Content-Security-Policy", value: CSP },
+  // Dva roky a subdomény. Doména jede na Vercelu přes HTTPS vždy;
+  // bez HSTS by první požadavek po zadání adresy šel pořád po HTTP.
+  { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+  { key: "X-Content-Type-Options", value: "nosniff" },
+  { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  // Pro prohlížeče, které neumí frame-ancestors.
+  { key: "X-Frame-Options", value: "DENY" },
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  {
+    key: "Permissions-Policy",
+    // Kamera zůstává povolená pro vlastní původ — brána u vstupu s ní
+    // bude skenovat QR vstupenky.
+    value: "geolocation=(), microphone=(), payment=(), usb=(), camera=(self)",
+  },
+];
+
 const nextConfig: NextConfig = {
+  // Verze frameworku není nic, co by měl znát kdokoli zvenčí.
+  poweredByHeader: false,
+
   // Next si jinak sám ustřihne koncové lomítko dřív, než se dostane na naši
   // mapu — každá stará adresa by pak skákala dvakrát. Webnode přitom
   // servíroval úplně všechno S lomítkem, takže by to potkalo každý příchozí
@@ -76,6 +133,29 @@ const nextConfig: NextConfig = {
       { source: "/servers/frontend/:path*", destination: "/", permanent: true },
       // Zbytek koncových lomítek, který nepatří žádné staré adrese.
       { source: "/:path+/", destination: "/:path+", permanent: true },
+    ];
+  },
+
+  async headers() {
+    return [
+      {
+        // Administrace má vlastní, přísnější CSP s nonce v `src/proxy.ts`.
+        // Dvě CSP hlavičky by se sčítaly jako průnik a shodily by ji.
+        source: "/((?!admin).*)",
+        headers: SECURITY_HEADERS,
+      },
+      {
+        // Odpovědi API nesmí uvíznout v žádné cache — kapacita se mění po
+        // vteřinách a `/api/dostupnost` si svoji cache řídí sám v route handleru.
+        source: "/api/:path*",
+        headers: [{ key: "X-Content-Type-Options", value: "nosniff" }],
+      },
+      {
+        source: "/foto/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
     ];
   },
 
