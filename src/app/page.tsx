@@ -3,7 +3,9 @@ import { GOURDS } from "@/lib/illustrations/gourds";
 import { GourdPlate } from "@/components/illustrations/Gourd";
 import { TornEdge } from "@/components/ui/TornEdge";
 import { SectionHead } from "@/components/ui/SectionHead";
+import { PhotoStrip } from "@/components/ui/PhotoStrip";
 import { ANIMALS, ATTRACTIONS, FARM, PRACTICAL, RULES } from "@/content/farm";
+import { FARM_PHOTOS } from "@/content/photos";
 import { moodAt, nextPumpkinOpening } from "@/lib/season";
 
 export default function HomePage() {
@@ -116,6 +118,19 @@ export default function HomePage() {
             </article>
           ))}
         </div>
+      </section>
+
+      {/* ── Fotky ────────────────────────────────────────────────────────
+          Po textové sekci potřebuje oko důkaz, že to místo doopravdy
+          existuje. Fotky jsou z různých let a přístrojů, drží je pohromadě
+          společný grading. */}
+      <section className="border-t-2 border-ink/12 bg-paper-deep/40 py-16">
+        <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
+          <p className="text-[0.74rem] uppercase tracking-[0.28em] text-ink-faint">
+            Ze statku
+          </p>
+        </div>
+        <PhotoStrip photos={FARM_PHOTOS} className="mt-8 mx-auto max-w-[88rem]" />
       </section>
 
       {/* ── Odrůdy ───────────────────────────────────────────────────────

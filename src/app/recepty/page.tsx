@@ -110,10 +110,10 @@ export default function RecipesPage() {
                   </h3>
                   <hr className="rule-hand my-3" />
                   <ul className="space-y-1.5 text-[0.94rem] leading-relaxed text-ink-soft">
-                    {r.ingredients.map((ing) => {
+                    {r.ingredients.map((ing, k) => {
                       const [qty, rest] = splitQuantity(ing);
                       return (
-                        <li key={ing}>
+                        <li key={`${k}-${ing}`}>
                           {qty && <span className="tabular mr-2 text-ink">{qty}</span>}
                           {rest}
                         </li>
@@ -132,8 +132,8 @@ export default function RecipesPage() {
                   </h3>
                   <hr className="rule-hand my-3" />
                   <div className="max-w-3xl space-y-4 leading-relaxed text-ink-soft">
-                    {r.steps.map((s) => (
-                      <p key={s} className="text-pretty">
+                    {r.steps.map((s, k) => (
+                      <p key={`${k}-${s}`} className="text-pretty">
                         {s}
                       </p>
                     ))}

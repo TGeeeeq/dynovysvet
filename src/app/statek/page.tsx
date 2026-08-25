@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { TornEdge } from "@/components/ui/TornEdge";
 import { InquiryForm } from "@/components/ui/InquiryForm";
+import { PhotoStrip } from "@/components/ui/PhotoStrip";
+import { VENUE_PHOTOS } from "@/content/photos";
 import { FARM } from "@/content/farm";
 
 export const metadata: Metadata = {
@@ -65,6 +67,10 @@ export default function VenuePage() {
           </div>
         </div>
         <TornEdge fill="var(--color-paper)" flip />
+      </section>
+
+      <section className="py-16">
+        <PhotoStrip photos={VENUE_PHOTOS} className="mx-auto max-w-[88rem]" />
       </section>
 
       <InquiryForm

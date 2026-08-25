@@ -1,6 +1,6 @@
 /**
  * Recepty přepsané ze starého webu (dynovysvet.cz/recepty-varime-z-dyni).
- * Text je majitelčin — schválně se nezkracuje ani „nevylepšuje": je to
+ * Text je majitelčin — schválně se nezkracuje ani „nevylepšuje“: je to
  * hlas statku a zároveň to nejlepší, co web má pro vyhledávače.
  */
 

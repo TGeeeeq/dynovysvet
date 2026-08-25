@@ -3,6 +3,7 @@ import { fontVariables } from "@/lib/design/fonts";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { VineSpine } from "@/components/illustrations/Vine";
+import { FarmJsonLd } from "@/components/site/StructuredData";
 import { FARM } from "@/content/farm";
 import "./globals.css";
 
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             vedle obsahu skutečně volný okraj. Přes text by to byla čmára.
             `left` ho zarovná těsně vlevo od kontejneru o šířce 88rem. */}
         <VineSpine className="pointer-events-none absolute top-44 hidden w-20 left-[max(0.25rem,calc(50%-49rem))] min-[1560px]:block" />
+        <FarmJsonLd />
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />

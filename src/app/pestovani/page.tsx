@@ -33,7 +33,7 @@ export default function GrowingPage() {
             <ol>
               {section.items.map((item, i) => (
                 <li
-                  key={item}
+                  key={`${i}-${item}`}
                   className="flex gap-5 border-t border-ink/15 py-4 last:border-b last:border-ink/15"
                 >
                   <span className="tabular pt-[0.3rem] text-[0.72rem] text-pumpkin">
