@@ -132,6 +132,9 @@ export const ticketTypes = pgTable(
     code: text('code').notNull(),
     nameCs: text('name_cs').notNull(),
     nameEn: text('name_en').notNull(),
+    // Default '' místo nullable: šablony e-mailů a ceník sahají na název bez
+    // kontroly na null, prázdný řetězec se dá fallbackovat na `nameEn`.
+    nameDe: text('name_de').notNull().default(''),
     priceCzk: integer('price_czk').notNull(),
     sortOrder: integer('sort_order').notNull().default(0),
     active: boolean('active').notNull().default(true),
@@ -143,11 +146,20 @@ export const ticketTypes = pgTable(
 
 /** Ceník 2025 – seed data, ne konstanty. Ceny se mění každou sezónu z admina. */
 export const TICKET_TYPE_SEED = [
-  { code: 'dospely', nameCs: 'Dospělý', nameEn: 'Adult', priceCzk: 120, sortOrder: 10, countsToCapacity: true },
+  {
+    code: 'dospely',
+    nameCs: 'Dospělý',
+    nameEn: 'Adult',
+    nameDe: 'Erwachsener',
+    priceCzk: 120,
+    sortOrder: 10,
+    countsToCapacity: true,
+  },
   {
     code: 'snizene',
     nameCs: 'Snížené (dítě / student / senior / ZTP)',
     nameEn: 'Reduced (child / student / senior / disabled)',
+    nameDe: 'Ermäßigt (Kind / Student / Senior / Behinderte)',
     priceCzk: 100,
     sortOrder: 20,
     countsToCapacity: true,
@@ -156,15 +168,17 @@ export const TICKET_TYPE_SEED = [
     code: 'dite_do_2',
     nameCs: 'Dítě do 2 let',
     nameEn: 'Child under 2',
+    nameDe: 'Kind unter 2 Jahren',
     priceCzk: 0,
     sortOrder: 30,
     countsToCapacity: false,
   },
-  { code: 'pes', nameCs: 'Pes', nameEn: 'Dog', priceCzk: 10, sortOrder: 40, countsToCapacity: false },
+  { code: 'pes', nameCs: 'Pes', nameEn: 'Dog', nameDe: 'Hund', priceCzk: 10, sortOrder: 40, countsToCapacity: false },
 ] as const satisfies ReadonlyArray<{
   code: string;
   nameCs: string;
   nameEn: string;
+  nameDe: string;
   priceCzk: number;
   sortOrder: number;
   countsToCapacity: boolean;
@@ -332,6 +346,9 @@ export const newsletterSignups = pgTable(
     source: text('source'),
     // Double opt-in: bez confirmedAt se nerozesílá.
     confirmedAt: tstz('confirmed_at'),
+    // Odhlášení nemažeme, jen značkujeme – jinak by se stejná adresa mohla
+    // znovu přihlásit importem a my bychom neuměli doložit, že si to nepřála.
+    unsubscribedAt: tstz('unsubscribed_at'),
     createdAt: tstz('created_at').notNull().default(now),
   },
   (t) => [uniqueIndex('newsletter_signups_email_key').on(t.email)],
@@ -359,3 +376,179 @@ export type InquiryKind = (typeof inquiryKind.enumValues)[number];
 export function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
+
+/* ==========================================================================
+ * ADMINISTRACE
+ *
+ * Administrace má vlastní tabulku uživatelů, oddělenou od `users`. Zákaznický
+ * účet a přístup do administrace jsou dvě různé věci s různým rizikovým
+ * profilem: u zákazníka je heslo nepovinné a login je pohodlí, u obsluhy je
+ * povinné, hlídané rate limitem, zamykané a auditované. Sloučit je do jedné
+ * tabulky by znamenalo, že se do administrace dá dostat kompromitací
+ * zákaznického flow (reset hesla, magic link, OAuth…).
+ * ========================================================================== */
+
+export const adminRole = pgEnum('admin_role', ['majitel', 'obsluha']);
+
+export const adminUsers = pgTable(
+  'admin_users',
+  {
+    id: pk(),
+    // Lowercase drží `normalizeEmail()`, viz CHECK v migraci.
+    email: text('email').notNull(),
+    name: text('name'),
+    // scrypt$N$r$p$salt$hash – formát nese i parametry, viz src/lib/admin/password.ts.
+    passwordHash: text('password_hash').notNull(),
+    role: adminRole('role').notNull().default('obsluha'),
+    // Připraveno na druhý faktor; dokud je NULL, TOTP se po uživateli nechce.
+    totpSecret: text('totp_secret'),
+    lastLoginAt: tstz('last_login_at'),
+    // Počítadlo neúspěchů drží účet i mezi requesty (serverless nemá paměť).
+    failedAttempts: integer('failed_attempts').notNull().default(0),
+    lockedUntil: tstz('locked_until'),
+    // Bootstrap majitel a hesla nastavená obsluhou musí projít změnou hesla.
+    mustChangePassword: boolean('must_change_password').notNull().default(false),
+    createdAt: tstz('created_at').notNull().default(now),
+    // Účet nemažeme – audit log na něj odkazuje a odchod brigádníka po sezóně
+    // nesmí přepsat historii. Deaktivace stačí, session se ověřuje proti tomuhle.
+    disabledAt: tstz('disabled_at'),
+  },
+  (t) => [uniqueIndex('admin_users_email_key').on(t.email)],
+);
+
+export const adminSessions = pgTable(
+  'admin_sessions',
+  {
+    id: pk(),
+    adminUserId: uuid('admin_user_id')
+      .notNull()
+      .references(() => adminUsers.id, { onDelete: 'cascade' }),
+    // SHA-256 hex opaque tokenu z cookie. Plaintext token v DB nikdy neleží –
+    // dump databáze tak sám o sobě nikoho nepřihlásí. Hash stačí SHA-256 bez
+    // soli: token je 32 náhodných bajtů, slovníkový útok na něj neexistuje.
+    tokenHash: text('token_hash').notNull(),
+    userAgent: text('user_agent'),
+    ip: text('ip'),
+    createdAt: tstz('created_at').notNull().default(now),
+    lastSeenAt: tstz('last_seen_at').notNull().default(now),
+    expiresAt: tstz('expires_at').notNull(),
+    // Odhlášení session maže logicky, ne fyzicky – ať je v auditu vidět, kdy skončila.
+    revokedAt: tstz('revoked_at'),
+  },
+  (t) => [
+    uniqueIndex('admin_sessions_token_hash_key').on(t.tokenHash),
+    index('admin_sessions_admin_user_id_idx').on(t.adminUserId),
+    index('admin_sessions_expires_at_idx').on(t.expiresAt),
+  ],
+);
+
+/**
+ * Editovatelné texty stránek.
+ *
+ * Klíč má tvar `"<stránka>:<blok>"` (např. `"domu:hero_nadpis"`). Výchozí znění
+ * všech bloků žije v kódu (`src/content/blocks`), v DB leží jen skutečné
+ * odchylky – proto jsou cs/en/de nullable. Web tak funguje i s prázdnou
+ * tabulkou a redesign textů v kódu se neztratí pod starým obsahem z databáze.
+ */
+export const contentBlocks = pgTable('content_blocks', {
+  key: text('key').primaryKey(),
+  cs: text('cs'),
+  en: text('en'),
+  de: text('de'),
+  updatedAt: tstz('updated_at').notNull().default(now),
+  updatedBy: uuid('updated_by').references(() => adminUsers.id, { onDelete: 'set null' }),
+});
+
+export const news = pgTable(
+  'news',
+  {
+    id: pk(),
+    slug: text('slug').notNull(),
+    // NULL = rozepsaný koncept. Veřejný výpis filtruje `published_at <= now()`,
+    // takže stejné pole slouží i k naplánování na budoucí datum.
+    publishedAt: tstz('published_at'),
+    pinnedUntil: tstz('pinned_until'),
+    titleCs: text('title_cs').notNull(),
+    titleEn: text('title_en'),
+    titleDe: text('title_de'),
+    bodyCs: text('body_cs').notNull(),
+    bodyEn: text('body_en'),
+    bodyDe: text('body_de'),
+    imagePath: text('image_path'),
+    createdAt: tstz('created_at').notNull().default(now),
+    updatedAt: tstz('updated_at').notNull().default(now),
+  },
+  (t) => [uniqueIndex('news_slug_key').on(t.slug), index('news_published_at_idx').on(t.publishedAt)],
+);
+
+/**
+ * Provozní nastavení jako klíč/hodnota.
+ *
+ * Schválně netypovaná tabulka s jsonb hodnotou – přidání nového přepínače pak
+ * nechce migraci. Typovou kontrolu dělá zod v `src/lib/db/settings.ts`.
+ */
+export const settings = pgTable('settings', {
+  key: text('key').primaryKey(),
+  value: jsonb('value').notNull(),
+  updatedAt: tstz('updated_at').notNull().default(now),
+  updatedBy: uuid('updated_by').references(() => adminUsers.id, { onDelete: 'set null' }),
+});
+
+/**
+ * Auditní stopa akcí obsluhy. Zapisuje se u všeho, co sahá na peníze, kapacitu
+ * nebo přístupy – při sporu se zákazníkem je tohle jediný doklad, kdo co udělal.
+ * `adminUserId` je nullable kvůli automatům (cron, webhook) a `SET NULL`
+ * po smazání účtu; záznam musí přežít i uživatele.
+ */
+export const auditLog = pgTable(
+  'audit_log',
+  {
+    id: pk(),
+    adminUserId: uuid('admin_user_id').references(() => adminUsers.id, { onDelete: 'set null' }),
+    action: text('action').notNull(),
+    entity: text('entity'),
+    entityId: text('entity_id'),
+    detail: jsonb('detail'),
+    ip: text('ip'),
+    createdAt: tstz('created_at').notNull().default(now),
+  },
+  (t) => [index('audit_log_created_idx').on(t.createdAt), index('audit_log_entity_idx').on(t.entity, t.entityId)],
+);
+
+/**
+ * Perzistentní stopa pokusů o přihlášení.
+ *
+ * Rate limit musí přežít studený start funkce, jinak stačí útočníkovi počkat na
+ * recyklaci instance. In-memory limiter je na serverless bezcenný, proto se
+ * počítá přímo v databázi.
+ */
+export const loginAttempts = pgTable(
+  'login_attempts',
+  {
+    id: pk(),
+    // Nullable – útočník může poslat i požadavek bez rozpoznatelného e-mailu.
+    email: text('email'),
+    ip: text('ip').notNull(),
+    ok: boolean('ok').notNull(),
+    createdAt: tstz('created_at').notNull().default(now),
+  },
+  (t) => [
+    index('login_attempts_ip_created_idx').on(t.ip, t.createdAt),
+    index('login_attempts_email_created_idx').on(t.email, t.createdAt),
+  ],
+);
+
+/* --------------------------------------------------- typy administrace */
+
+export type AdminUser = typeof adminUsers.$inferSelect;
+export type AdminSession = typeof adminSessions.$inferSelect;
+export type ContentBlock = typeof contentBlocks.$inferSelect;
+export type NewsItem = typeof news.$inferSelect;
+export type Setting = typeof settings.$inferSelect;
+export type AuditLogEntry = typeof auditLog.$inferSelect;
+export type LoginAttempt = typeof loginAttempts.$inferSelect;
+
+export type AdminRole = (typeof adminRole.enumValues)[number];
+
+/** Uživatel administrace tak, jak smí opustit datovou vrstvu – bez hashe hesla a TOTP. */
+export type SafeAdminUser = Omit<AdminUser, 'passwordHash' | 'totpSecret'>;

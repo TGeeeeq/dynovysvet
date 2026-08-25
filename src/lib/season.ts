@@ -6,6 +6,8 @@
  * v administraci, přebíjí je záznam v databázi (`season_config`).
  */
 
+import type { Locale } from "./i18n/config";
+
 export type SeasonKey = "dyne" | "les" | "trh" | "spanek";
 
 export interface SeasonWindow {
@@ -25,7 +27,7 @@ export const DEFAULT_WINDOWS: SeasonWindow[] = [
 export interface SeasonMood {
   key: SeasonKey;
   /** Krátký titulek stavu — jde do hlavičky i do OG popisku. */
-  label: string;
+  label: Record<Locale, string>;
   /** Akcentní barva pro tuto náladu (CSS proměnná z designového systému). */
   accent: "pumpkin" | "moss" | "wheat";
   /** Prodávají se v tomto období vstupenky online? */
@@ -35,25 +37,41 @@ export interface SeasonMood {
 export const MOODS: Record<SeasonKey, SeasonMood> = {
   dyne: {
     key: "dyne",
-    label: "Dýňový svět je otevřený",
+    label: {
+      cs: "Dýňový svět je otevřený",
+      en: "Pumpkin World is open",
+      de: "Die Kürbiswelt ist geöffnet",
+    },
     accent: "pumpkin",
     ticketsOpen: true,
   },
   les: {
     key: "les",
-    label: "Příroda hrou — lesní hřiště pro školy",
+    label: {
+      cs: "Příroda hrou — lesní hřiště pro školy",
+      en: "Nature at Play — the forest playground for schools",
+      de: "Natur zum Spielen — der Waldspielplatz für Schulen",
+    },
     accent: "moss",
     ticketsOpen: false,
   },
   trh: {
     key: "trh",
-    label: "Dětský bleší trh na statku",
+    label: {
+      cs: "Dětský bleší trh na statku",
+      en: "The children's flea market is on",
+      de: "Kinderflohmarkt auf dem Hof",
+    },
     accent: "wheat",
     ticketsOpen: true,
   },
   spanek: {
     key: "spanek",
-    label: "Statek je zavřený — chystáme další sezónu",
+    label: {
+      cs: "Statek je zavřený — chystáme další sezónu",
+      en: "The farm is closed — we are getting the next season ready",
+      de: "Der Hof ist geschlossen — wir bereiten die nächste Saison vor",
+    },
     accent: "moss",
     ticketsOpen: false,
   },
