@@ -1,0 +1,204 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   DÝŇOVÝ SVĚT — designový systém „Rytý herbář"
+   Inkoust na papíře. Oranžová není nikdy velká výplň — je to značka, linka,
+   drobná sazba a světlo. Velké plochy jsou papír nebo noc.
+   ========================================================================== */
+
+@theme {
+  /* --- Barvy ------------------------------------------------------------ */
+  --color-ink: #1c1814;
+  --color-ink-soft: #4a4038;
+  --color-ink-faint: #7d7166;
+
+  --color-paper: #f4ebdc;
+  --color-paper-deep: #e8dac4;
+  --color-paper-bright: #fbf6ee;
+
+  --color-pumpkin: #c25a22;
+  --color-ember: #8f3a16;
+  --color-moss: #4e5f35;
+  --color-moss-deep: #36421f;
+  --color-wheat: #d9a441;
+
+  --color-night: #141a16;
+  --color-night-soft: #1f2a22;
+  --color-lantern: #ffb347;
+
+  /* --- Písma ------------------------------------------------------------ */
+  --font-display: var(--font-fraunces), "Iowan Old Style", Georgia, serif;
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-jb), ui-monospace, "SF Mono", monospace;
+
+  /* --- Časování --------------------------------------------------------- */
+  /* Vlastní křivky. Nic z toho není `ease-in-out` — právě ta obyčejnost
+     dělá z animace šablonu. */
+  --ease-vine: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-drop: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-ink: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@layer base {
+  :root {
+    color-scheme: light;
+    --grain-opacity: 0.085;
+    --grain-url: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22180%22%20height%3D%22180%22%3E%3Cfilter%20id%3D%22g%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.82%22%20numOctaves%3D%224%22%20stitchTiles%3D%22stitch%22%2F%3E%3CfeColorMatrix%20type%3D%22saturate%22%20values%3D%220%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22180%22%20height%3D%22180%22%20filter%3D%22url%28%23g%29%22%2F%3E%3C%2Fsvg%3E");
+    --rule-url: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22240%22%20height%3D%222%22%3E%3Cpath%20d%3D%22M0%201.2%20C%2024%200.4%2C%2048%201.7%2C%2072%201.0%20S%20120%200.3%2C%20144%201.4%20S%20192%201.8%2C%20216%200.9%20S%20240%201.3%2C%20240%201.1%22%20stroke%3D%22%231c1814%22%20stroke-width%3D%221.1%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Display sazba: vysoké optické velikosti + WONK osa Fraunces.
+     WONK dává tvarům organickou rozkolísanost — doslova tykvovitou. */
+  .font-display {
+    font-family: var(--font-display);
+    font-variation-settings: "SOFT" 40, "WONK" 1;
+    letter-spacing: -0.02em;
+    line-height: 0.94;
+  }
+
+  /* Letterpress: písmo působí otisknuté do papíru, ne položené na něm. */
+  .letterpress {
+    text-shadow:
+      0 1px 0 rgb(255 255 255 / 0.35),
+      0 -1px 1px rgb(143 58 22 / 0.13);
+  }
+
+  ::selection {
+    background-color: var(--color-wheat);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-pumpkin);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Číslice v cenách, kapacitě a časech se nesmí kývat při přepočtu. */
+  .tabular {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+}
+
+@layer components {
+  /* Zrno papíru. Jedna vrstva fixovaná k viewportu — levnější a
+     přesvědčivější než textura na každém prvku. */
+  .grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    pointer-events: none;
+    opacity: var(--grain-opacity);
+    background-image: var(--grain-url);
+    background-size: 180px 180px;
+    mix-blend-mode: multiply;
+  }
+
+  /* Ruční linka místo border: 1px solid. Nepravidelnost je záměr. */
+  .rule-hand {
+    border: 0;
+    height: 2px;
+    background-image: var(--rule-url);
+    background-repeat: repeat-x;
+    background-size: 240px 2px;
+    opacity: 0.5;
+  }
+}
+
+/* --- Přístupnost ------------------------------------------------------- */
+/* Každá animace na webu se tímto vypne. Obsah musí zůstat plně čitelný. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Úponek ------------------------------------------------------------
+   Kreslí se podle pozice scrollu. Vše běží na kompozitoru přes
+   `animation-timeline`, takže na hlavním vlákně to nestojí nic. */
+@layer components {
+  .vine-stem {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    pathLength: 1;
+  }
+
+  .vine-part {
+    transform-box: fill-box;
+    transform-origin: center;
+    scale: 0;
+    opacity: 0;
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .vine-stem {
+      animation: vine-draw linear both;
+      animation-timeline: scroll(root block);
+    }
+
+    /* Každý list vyrazí přesně ve chvíli, kdy kolem něj stonek proroste.
+       `--at` je jeho podíl na délce stonku, takže se to samo synchronizuje. */
+    .vine-part {
+      animation: vine-sprout linear both;
+      animation-timeline: scroll(root block);
+      animation-range: calc(var(--at) * 100%) calc(var(--at) * 100% + 9%);
+    }
+  }
+}
+
+@keyframes vine-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes vine-sprout {
+  from {
+    scale: 0;
+    opacity: 0;
+    rotate: -14deg;
+  }
+  to {
+    scale: 1;
+    opacity: 1;
+    rotate: 0deg;
+  }
+}
+
+/* Bez podpory scroll-driven animací (nebo při reduced-motion) je úponek
+   prostě celý vykreslený. Nic nechybí. */
+@supports not (animation-timeline: scroll()) {
+  .vine-stem { stroke-dashoffset: 0; }
+  .vine-part { scale: 1; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vine-stem { stroke-dashoffset: 0; }
+  .vine-part { scale: 1; opacity: 1; }
+}

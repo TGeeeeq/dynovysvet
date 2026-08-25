@@ -1,0 +1,23 @@
+# závislosti
+node_modules/
+.pnp
+.pnp.*
+
+# build
+.next/
+out/
+build/
+next-env.d.ts
+.turbo/
+
+# běhové
+.env
+.env*.local
+*.log
+.DS_Store
+
+# nasazení
+.vercel
+
+# testy
+coverage/
