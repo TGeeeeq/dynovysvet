@@ -13,10 +13,8 @@ import type { NextConfig } from "next";
 const OLD_TO_NEW: Record<string, string> = {
   "/o-nas": "/",
   "/programy": "/dynovy-svet",
-  "/kontakt": "/kontakt",
   "/statek-u-pipku-akce": "/statek",
   "/internetovy-obchod": "/",
-  "/obchodni-podminky": "/obchodni-podminky",
   "/pravidla-ochrany-soukromi": "/ochrana-soukromi",
   "/semena-tykvi-osivo": "/",
   "/prodej-dyni-z-vlastni-sklizne": "/dynovy-svet",
@@ -32,6 +30,12 @@ const OLD_TO_NEW: Record<string, string> = {
 };
 
 const nextConfig: NextConfig = {
+  // Next si jinak sám ustřihne koncové lomítko dřív, než se dostane na naši
+  // mapu — každá stará adresa by pak skákala dvakrát. Webnode přitom
+  // servíroval úplně všechno S lomítkem, takže by to potkalo každý příchozí
+  // odkaz. Přebíráme normalizaci na sebe a řešíme ji v jednom kroku.
+  skipTrailingSlashRedirect: true,
+
   async redirects() {
     const rules = Object.entries(OLD_TO_NEW).flatMap(([from, to]) => [
       // Webnode servíroval adresy s koncovým lomítkem; obě varianty musí
@@ -48,6 +52,8 @@ const nextConfig: NextConfig = {
       // Vnořené cesty anglické mutace (/en/o-nas/spolu, /en/internetovy-obchod/…).
       { source: "/en/:path*", destination: "/", permanent: true },
       { source: "/servers/frontend/:path*", destination: "/", permanent: true },
+      // Zbytek koncových lomítek, který nepatří žádné staré adrese.
+      { source: "/:path+/", destination: "/:path+", permanent: true },
     ];
   },
 
