@@ -5,7 +5,7 @@ import { SectionHead } from "@/components/ui/SectionHead";
 import { TornEdge } from "@/components/ui/TornEdge";
 import { GourdPlate } from "@/components/illustrations/Gourd";
 import { GOURD_BY_SLUG, GOURDS } from "@/lib/illustrations/gourds";
-import { ANIMALS, ATTRACTIONS, FARM, PRACTICAL, RULES } from "@/content/farm";
+import { animalsFor, attractionsFor, FARM, practicalFor, rulesFor } from "@/content/farm";
 import { TICKET_TYPES } from "@/lib/tickets/schedule";
 import { nextPumpkinOpening } from "@/lib/season";
 
@@ -17,6 +17,10 @@ const HOURS = [
 ];
 
 export function PumpkinWorld({ locale }: PageProps) {
+  const attractions = attractionsFor(locale);
+  const animals = animalsFor(locale);
+  const practical = practicalFor(locale);
+  const rules = rulesFor(locale);
   const season = nextPumpkinOpening(new Date()).getUTCFullYear();
 
   return (
@@ -118,7 +122,7 @@ export function PumpkinWorld({ locale }: PageProps) {
           lead="Statek funguje celý rok. Na dva měsíce k němu jen přibude výstava a otevřou se vrata."
         />
         <div className="mt-14 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-          {ATTRACTIONS.map((a, i) => (
+          {attractions.map((a, i) => (
             <article key={a.title} className={i === 0 ? "sm:col-span-2" : undefined}>
               <p className="tabular text-[0.72rem] text-pumpkin">{String(i + 1).padStart(2, "0")}</p>
               <hr className="rule-hand my-3" />
@@ -163,7 +167,7 @@ export function PumpkinWorld({ locale }: PageProps) {
             lead="Hospodářská zvířata typická pro český venkov. Kozičky si berou granule přímo z ruky."
           />
           <ul className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
-            {ANIMALS.map((a) => (
+            {animals.map((a) => (
               <li key={a.name} className="border-l-2 border-ink/15 pl-4">
                 <p className="font-display text-xl font-semibold">{a.name}</p>
                 <p className="text-[0.78rem] uppercase tracking-[0.16em] text-pumpkin">{a.kind}</p>
@@ -179,7 +183,7 @@ export function PumpkinWorld({ locale }: PageProps) {
         <div className="mx-auto max-w-[88rem] px-5 py-20 sm:px-8">
           <SectionHead plate="IV" title="Než vyrazíte" />
           <dl className="mt-10 grid gap-x-12 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
-            {PRACTICAL.map((p) => (
+            {practical.map((p) => (
               <div key={p.label} className="border-t border-ink/15 pt-3">
                 <dt className="text-[0.74rem] uppercase tracking-[0.2em] text-ink-faint">{p.label}</dt>
                 <dd className="mt-1.5 leading-relaxed text-ink-soft">{p.value}</dd>
@@ -187,7 +191,7 @@ export function PumpkinWorld({ locale }: PageProps) {
             ))}
           </dl>
           <ul className="mt-10 space-y-1 text-[0.9rem] text-ink-faint">
-            {RULES.map((r) => <li key={r}>{r}</li>)}
+            {rules.map((r) => <li key={r}>{r}</li>)}
           </ul>
         </div>
       </section>

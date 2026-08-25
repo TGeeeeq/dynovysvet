@@ -6,11 +6,15 @@ import { GourdPlate } from "@/components/illustrations/Gourd";
 import { TornEdge } from "@/components/ui/TornEdge";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { PhotoStrip } from "@/components/ui/PhotoStrip";
-import { ANIMALS, ATTRACTIONS, FARM, PRACTICAL, RULES } from "@/content/farm";
+import { animalsFor, attractionsFor, FARM, practicalFor, rulesFor } from "@/content/farm";
 import { FARM_PHOTOS } from "@/content/photos";
 import { moodAt, nextPumpkinOpening } from "@/lib/season";
 
 export function Home({ locale }: PageProps) {
+  const attractions = attractionsFor(locale);
+  const animals = animalsFor(locale);
+  const practical = practicalFor(locale);
+  const rules = rulesFor(locale);
   const now = new Date();
   const mood = moodAt(now);
   const opening = nextPumpkinOpening(now);
@@ -100,7 +104,7 @@ export function Home({ locale }: PageProps) {
         />
 
         <div className="mt-14 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-          {ATTRACTIONS.map((a, i) => (
+          {attractions.map((a, i) => (
             <article
               key={a.title}
               className={i === 0 ? "sm:col-span-2 lg:col-span-2" : undefined}
@@ -184,7 +188,7 @@ export function Home({ locale }: PageProps) {
             lead="Hospodářská zvířata typická pro český venkov. Většina se dá pohladit, kozičky si berou granule přímo z ruky."
           />
           <ul className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
-            {ANIMALS.map((a) => (
+            {animals.map((a) => (
               <li key={a.name} className="border-l-2 border-ink/15 pl-4">
                 <p className="font-display text-xl font-semibold">{a.name}</p>
                 <p className="text-[0.78rem] uppercase tracking-[0.16em] text-pumpkin">
@@ -204,7 +208,7 @@ export function Home({ locale }: PageProps) {
         <div className="mx-auto max-w-[88rem] px-5 py-20 sm:px-8">
           <SectionHead plate="IV" title="Než vyrazíte" />
           <dl className="mt-10 grid gap-x-12 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
-            {PRACTICAL.map((p) => (
+            {practical.map((p) => (
               <div key={p.label} className="border-t border-ink/15 pt-3">
                 <dt className="text-[0.74rem] uppercase tracking-[0.2em] text-ink-faint">
                   {p.label}
@@ -214,7 +218,7 @@ export function Home({ locale }: PageProps) {
             ))}
           </dl>
           <ul className="mt-10 space-y-1 text-[0.9rem] text-ink-faint">
-            {RULES.map((r) => (
+            {rules.map((r) => (
               <li key={r}>{r}</li>
             ))}
           </ul>
