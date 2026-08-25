@@ -112,7 +112,7 @@ export function planSeason(plan: SeasonPlan): PlannedDay[] {
 export const TICKET_TYPES = [
   { code: "dospely", name: "Dospělý", price: 120, countsToCapacity: true, note: "" },
   { code: "snizene", name: "Snížené", price: 100, countsToCapacity: true, note: "dítě, student, senior, ZTP" },
-  { code: "dite_do_2", name: "Dítě do 2 let", price: 0, countsToCapacity: false, note: "zdarma" },
+  { code: "dite_do_2", name: "Dítě do 2 let", price: 0, countsToCapacity: false, note: "" },
   { code: "pes", name: "Pes", price: 10, countsToCapacity: false, note: "" },
 ] as const;
 
