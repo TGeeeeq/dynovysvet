@@ -72,6 +72,7 @@ export function FleaMarket({ locale }: PageProps) {
 
       <section className="mx-auto max-w-[88rem] px-5 py-24 sm:px-8">
         <SectionHead
+          locale={locale}
           plate="I"
           title={c("rulesTitle")}
           lead={c("rulesLead")}

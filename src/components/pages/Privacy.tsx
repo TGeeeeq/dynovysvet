@@ -14,7 +14,7 @@ export function Privacy({ locale }: PageProps) {
     <div className="mx-auto max-w-[88rem] px-5 py-16 sm:px-8">
       {/* TODO: právní texty jsou převzaté z Webnode šablony a odkazují na slovenský zákon č. 18/2018; před spuštěním nechat zkontrolovat právníkem. */}
       <article className="max-w-3xl py-8">
-        <SectionHead plate="I" title={doc.title} />
+        <SectionHead locale={locale} plate="I" title={doc.title} />
         <p className="tabular mt-6 text-[0.78rem] uppercase tracking-[0.2em] text-ink-faint">
           {doc.updated}
         </p>

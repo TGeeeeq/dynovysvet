@@ -131,7 +131,7 @@ export function InquiryForm({
       <div className="mx-auto max-w-[88rem] px-5 py-24 sm:px-8">
         <div className="grid gap-14 lg:grid-cols-[0.85fr_1.15fr]">
           {plate ? (
-            <SectionHead plate={plate} title={title} lead={lead} />
+            <SectionHead locale={locale} plate={plate} title={title} lead={lead} />
           ) : (
             <header className="max-w-2xl">
               <h2 className="font-display letterpress text-balance text-4xl font-semibold sm:text-5xl">

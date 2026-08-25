@@ -1,3 +1,9 @@
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/config";
+
+/** „Tabule" je slovo z herbáře; v cizí mutaci musí být přeložené, jinak
+ *  čtenář netuší, co za číslicí stojí. */
+const PLATE: Record<Locale, string> = { cs: "Tabule", en: "Plate", de: "Tafel" };
+
 /**
  * Nadpis sekce. Číslo tabule vlevo v mono, titulek v display serifu.
  * Ta dvojice organického serifu a přesného mono je záměrná: emoce vs. fakta.
@@ -6,18 +12,20 @@ export function SectionHead({
   plate,
   title,
   lead,
+  locale = DEFAULT_LOCALE,
   className,
 }: {
   /** Číslo „tabule" v almanachu, např. „III". */
   plate: string;
   title: string;
   lead?: string;
+  locale?: Locale;
   className?: string;
 }) {
   return (
     <header className={`max-w-2xl ${className ?? ""}`}>
       <p className="tabular text-[0.72rem] uppercase tracking-[0.34em] text-pumpkin">
-        Tabule {plate}
+        {PLATE[locale]} {plate}
       </p>
       <h2 className="font-display letterpress mt-3 text-balance text-4xl font-semibold sm:text-5xl">
         {title}

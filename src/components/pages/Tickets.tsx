@@ -39,6 +39,7 @@ export async function Tickets({ locale }: PageProps) {
     <div className="mx-auto max-w-[88rem] px-5 py-16 sm:px-8">
       <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-start">
         <SectionHead
+          locale={locale}
           plate="I"
           title={`${c("titlePrefix")} ${season}`}
           lead={c("lead")}

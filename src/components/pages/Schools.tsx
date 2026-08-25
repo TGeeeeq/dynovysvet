@@ -82,6 +82,7 @@ export function Schools({ locale }: PageProps) {
       {/* ── Praktické informace ─────────────────────────────────────── */}
       <section className="mx-auto max-w-[88rem] px-5 py-24 sm:px-8">
         <SectionHead
+          locale={locale}
           plate="III"
           title={c("howTitle")}
           lead={c("howLead")}

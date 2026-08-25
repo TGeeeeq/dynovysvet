@@ -49,6 +49,7 @@ export function Recipes({ locale }: PageProps) {
           dvaadvacet karet. */}
       <section className="py-8">
         <SectionHead
+          locale={locale}
           plate="I"
           title={t("recipesTitle")}
           lead={t("recipesLead")}
@@ -149,6 +150,7 @@ export function Recipes({ locale }: PageProps) {
       {/* ── Výzva a odkaz na pořad ──────────────────────────────────── */}
       <section className="border-t-2 border-ink/12 py-20">
         <SectionHead
+          locale={locale}
           plate="II"
           title={t("ownRecipeTitle")}
           lead={t("ownRecipeLead")}

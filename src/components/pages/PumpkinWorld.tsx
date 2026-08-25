@@ -115,6 +115,7 @@ export function PumpkinWorld({ locale }: PageProps) {
       {/* ── Co tu je ─────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-[88rem] px-5 py-24 sm:px-8">
         <SectionHead
+          locale={locale}
           plate="I"
           title={c("whatTitle")}
           lead={c("whatLead")}
@@ -137,6 +138,7 @@ export function PumpkinWorld({ locale }: PageProps) {
       <section className="border-y-2 border-ink/12 bg-paper-bright py-24">
         <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
           <SectionHead
+          locale={locale}
             plate="II"
             title={c("varietiesTitle")}
             lead={c("varietiesLead")}
@@ -160,6 +162,7 @@ export function PumpkinWorld({ locale }: PageProps) {
       <section className="mx-auto max-w-[88rem] px-5 py-24 sm:px-8">
         <div className="grid gap-14 lg:grid-cols-[0.85fr_1.15fr]">
           <SectionHead
+          locale={locale}
             plate="III"
             title={c("animalsTitle")}
             lead={c("animalsLead")}
@@ -179,7 +182,7 @@ export function PumpkinWorld({ locale }: PageProps) {
       {/* ── Praktické ───────────────────────────────────────────────── */}
       <section className="border-t-2 border-ink/12 bg-paper-deep/50">
         <div className="mx-auto max-w-[88rem] px-5 py-20 sm:px-8">
-          <SectionHead plate="IV" title={c("beforeTitle")} />
+          <SectionHead locale={locale} plate="IV" title={c("beforeTitle")} />
           <dl className="mt-10 grid gap-x-12 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
             {practical.map((p) => (
               <div key={p.label} className="border-t border-ink/15 pt-3">

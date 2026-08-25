@@ -14,6 +14,7 @@ export function Growing({ locale }: PageProps) {
     <div className="mx-auto max-w-[88rem] px-5 py-16 sm:px-8">
       <section className="py-8">
         <SectionHead
+          locale={locale}
           plate={PLATES[0]}
           title={SEO.growing[locale].title}
           lead={intro}
@@ -26,7 +27,7 @@ export function Growing({ locale }: PageProps) {
       {sections.map((section, si) => (
         <section key={section.title} className="py-14">
           <div className="grid gap-x-14 gap-y-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-            <SectionHead plate={PLATES[si + 1]} title={section.title} />
+            <SectionHead locale={locale} plate={PLATES[si + 1]} title={section.title} />
 
             <ol>
               {section.items.map((item, i) => (

@@ -29,7 +29,7 @@ export function Venue({ locale }: PageProps) {
 
       <section className="bg-paper-deep">
         <div className="mx-auto max-w-[88rem] px-5 py-20 sm:px-8">
-          <SectionHead plate="I" title={c("spacesTitle")} />
+          <SectionHead locale={locale} plate="I" title={c("spacesTitle")} />
           <div className="mt-12 grid gap-x-10 gap-y-10 sm:grid-cols-2">
             {VENUE_SPACES.map((sp, i) => (
               <article key={sp.name.cs}>

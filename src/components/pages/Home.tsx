@@ -103,6 +103,7 @@ export function Home({ locale }: PageProps) {
           kolem. Šest stejných karet v řadě je to, čemu se vyhýbáme. */}
       <section className="mx-auto max-w-[88rem] px-5 py-24 sm:px-8">
         <SectionHead
+          locale={locale}
           plate="I"
           title={c("doTitle")}
           lead={c("doLead")}
@@ -150,6 +151,7 @@ export function Home({ locale }: PageProps) {
       <section className="border-y-2 border-ink/12 bg-paper-bright py-24">
         <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
           <SectionHead
+          locale={locale}
             plate="II"
             title={c("varietiesTitle")}
             lead={c("varietiesLead")}
@@ -188,6 +190,7 @@ export function Home({ locale }: PageProps) {
       <section className="mx-auto max-w-[88rem] px-5 py-24 sm:px-8">
         <div className="grid gap-14 lg:grid-cols-[0.9fr_1.1fr]">
           <SectionHead
+          locale={locale}
             plate="III"
             title={c("animalsTitle")}
             lead={c("animalsLead")}
@@ -211,7 +214,7 @@ export function Home({ locale }: PageProps) {
           vypadá jako referenční informace. */}
       <section className="border-t-2 border-ink/12 bg-paper-deep/50">
         <div className="mx-auto max-w-[88rem] px-5 py-20 sm:px-8">
-          <SectionHead plate="IV" title={c("beforeTitle")} />
+          <SectionHead locale={locale} plate="IV" title={c("beforeTitle")} />
           <dl className="mt-10 grid gap-x-12 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
             {practical.map((p) => (
               <div key={p.label} className="border-t border-ink/15 pt-3">

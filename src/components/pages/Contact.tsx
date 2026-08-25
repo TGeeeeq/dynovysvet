@@ -112,7 +112,7 @@ export function Contact({ locale }: PageProps) {
       />
 
       <section className="mx-auto max-w-[88rem] px-5 py-16 sm:px-8">
-        <SectionHead plate="II" title={c("billingTitle")} />
+        <SectionHead locale={locale} plate="II" title={c("billingTitle")} />
         <dl className="tabular mt-8 grid gap-x-12 gap-y-4 text-[0.94rem] sm:grid-cols-2 lg:grid-cols-4">
           {[
             [c("billingOperator"), `${FARM.owner}, ${c("idNo")} ${FARM.ico}`],

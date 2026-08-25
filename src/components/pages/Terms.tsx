@@ -14,7 +14,7 @@ export function Terms({ locale }: PageProps) {
     <div className="mx-auto max-w-[88rem] px-5 py-16 sm:px-8">
       {/* Jediná čitelná míra řádku. Právní text se nečte v mřížce. */}
       <article className="max-w-3xl py-8">
-        <SectionHead plate="I" title={doc.title} />
+        <SectionHead locale={locale} plate="I" title={doc.title} />
         <p className="tabular mt-6 text-[0.78rem] uppercase tracking-[0.2em] text-ink-faint">
           {doc.updated}
         </p>
