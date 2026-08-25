@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { spotsLabel } from "@/content/copy/tickets";
+import type { Locale } from "@/lib/i18n/config";
+import { dict } from "@/lib/i18n/dict";
 
 /**
  * Ukazatel zbývající kapacity slotu.
@@ -16,10 +19,12 @@ import { useEffect, useRef, useState } from "react";
 export function CapacityMeter({
   remaining,
   capacity,
+  locale,
   className,
 }: {
   remaining: number;
   capacity: number;
+  locale: Locale;
   className?: string;
 }) {
   const pct = capacity > 0 ? 1 - remaining / capacity : 1;
@@ -32,7 +37,7 @@ export function CapacityMeter({
       <div className="flex items-baseline gap-2">
         {soldOut ? (
           <span className="text-[0.82rem] uppercase tracking-[0.2em] text-ink-faint">
-            Vyprodáno
+            {dict.soldOut[locale]}
           </span>
         ) : (
           <>
@@ -44,7 +49,7 @@ export function CapacityMeter({
               }`}
             />
             <span className="text-[0.82rem] text-ink-faint">
-              {remaining > 50 ? "volno" : remaining === 1 ? "místo" : remaining < 5 ? "místa" : "míst"}
+              {remaining > 50 ? dict.free[locale] : spotsLabel(remaining, locale)}
             </span>
           </>
         )}

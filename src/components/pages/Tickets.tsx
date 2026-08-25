@@ -6,6 +6,8 @@ import { GOURDS } from "@/lib/illustrations/gourds";
 import { planSeason, SEASON_2026 } from "@/lib/tickets/schedule";
 import { moodAt, nextPumpkinOpening } from "@/lib/season";
 import { FARM } from "@/content/farm";
+import { TICKETS } from "@/content/copy/tickets";
+import { copyFor } from "@/content/copy/types";
 
 
 /**
@@ -31,14 +33,15 @@ export async function Tickets({ locale }: PageProps) {
   const mood = moodAt(now);
   const season = nextPumpkinOpening(now).getUTCFullYear();
   const days = await loadDays();
+  const c = copyFor(TICKETS, locale);
 
   return (
     <div className="mx-auto max-w-[88rem] px-5 py-16 sm:px-8">
       <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-start">
         <SectionHead
           plate="I"
-          title={`Vstupenky do Dýňového světa ${season}`}
-          lead="Vstup na konkrétní hodinu. Držíme tím počet lidí na statku tak, aby si všichni měli kde hrát a bylo na koho se dívat."
+          title={`${c("titlePrefix")} ${season}`}
+          lead={c("lead")}
         />
         <GourdPlate
           gourd={GOURDS[2]}
@@ -50,32 +53,30 @@ export async function Tickets({ locale }: PageProps) {
 
       {!mood.ticketsOpen && (
         <p className="mt-8 max-w-2xl border-l-2 border-wheat bg-paper-deep/60 py-3 pl-4 text-[0.96rem] text-ink-soft">
-          Prodej vstupenek na sezónu {season} zatím neběží. Termíny níže jsou
-          vypsané, ale nakupovat půjde až od začátku září — dáme vědět e-mailem
-          i na Facebooku.
+          {c("notOpenYet").replace("{season}", String(season))}
         </p>
       )}
 
       <div className="mt-14">
-        <SlotPicker days={days} />
+        <SlotPicker days={days} locale={locale} />
       </div>
 
       <section className="mt-24 grid gap-10 border-t-2 border-ink/12 pt-12 sm:grid-cols-2 lg:grid-cols-4">
         {[
-          ["Proč na čas", "Statek má svoji kapacitu. Když se v jednu chvíli sejde příliš lidí, nikdo si nic neužije."],
-          ["Jak vstupenka vypadá", "Přijde e-mailem jako QR kód. U vstupu ho ukážete v telefonu, tisknout nemusíte."],
-          ["Když nemůžete přijet", "Ozvěte se nám na telefon nebo e-mail a domluvíme se na jiném termínu."],
-          ["Platba na místě", "Kartou na statku bohužel ne. Hotově nebo QR platbou z telefonu ano."],
-        ].map(([h, t]) => (
+          [c("faq1Title"), c("faq1Text")],
+          [c("faq2Title"), c("faq2Text")],
+          [c("faq3Title"), c("faq3Text")],
+          [c("faq4Title"), c("faq4Text")],
+        ].map(([h, body]) => (
           <div key={h}>
             <h3 className="font-display text-lg font-semibold">{h}</h3>
-            <p className="mt-2 text-[0.94rem] leading-relaxed text-ink-soft">{t}</p>
+            <p className="mt-2 text-[0.94rem] leading-relaxed text-ink-soft">{body}</p>
           </div>
         ))}
       </section>
 
       <p className="tabular mt-12 text-[0.88rem] text-ink-faint">
-        Nejde to, nebo si nejste jistí? Zavolejte na {FARM.phoneHuman}.
+        {c("callUs")} {FARM.phoneHuman}.
       </p>
     </div>
   );

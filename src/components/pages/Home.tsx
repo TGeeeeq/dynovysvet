@@ -9,8 +9,14 @@ import { PhotoStrip } from "@/components/ui/PhotoStrip";
 import { animalsFor, attractionsFor, FARM, practicalFor, rulesFor } from "@/content/farm";
 import { FARM_PHOTOS } from "@/content/photos";
 import { moodAt, nextPumpkinOpening } from "@/lib/season";
+import { HOME } from "@/content/copy/home";
+import { copyFor } from "@/content/copy/types";
+import { gourdName, gourdUse } from "@/content/gourdLabels";
+import { makeT } from "@/lib/i18n/dict";
 
 export function Home({ locale }: PageProps) {
+  const c = copyFor(HOME, locale);
+  const t = makeT(locale);
   const attractions = attractionsFor(locale);
   const animals = animalsFor(locale);
   const practical = practicalFor(locale);
@@ -29,17 +35,16 @@ export function Home({ locale }: PageProps) {
         <div className="mx-auto grid max-w-[88rem] items-center gap-10 px-5 pb-16 pt-10 sm:px-8 sm:pb-24 sm:pt-14 lg:grid-cols-[1.08fr_0.92fr]">
           <div>
             <p className="tabular text-[0.76rem] uppercase tracking-[0.34em] text-pumpkin">
-              Nová Ves u Leštiny · Vysočina
+              {c("kicker")}
             </p>
 
             <h1 className="font-display letterpress mt-5 text-[clamp(3.2rem,11vw,8.5rem)] font-semibold">
-              <span className="block">Dýňový</span>
-              <span className="block pl-[0.08em] text-pumpkin">svět</span>
+              <span className="block">{c("titleTop")}</span>
+              <span className="block pl-[0.08em] text-pumpkin">{c("titleBottom")}</span>
             </h1>
 
             <p className="mt-7 max-w-xl text-pretty text-xl leading-relaxed text-ink-soft">
-              Pěstujeme dýně. Na podzim otevřeme dvůr, stodolu i zahradu a ukážeme
-              vám, kolik jich vlastně existuje. Děti mezitím obsadí slámohrad.
+              {c("lead")}
             </p>
 
             <div className="mt-9 flex flex-wrap items-center gap-4">
@@ -47,13 +52,13 @@ export function Home({ locale }: PageProps) {
                 href={href("tickets", locale)}
                 className="rounded-full bg-ink px-7 py-3.5 text-paper transition-colors hover:bg-ember"
               >
-                {mood.ticketsOpen ? "Koupit vstupenky" : `Hlídat start sezóny ${season}`}
+                {mood.ticketsOpen ? t("buyTickets") : `${c("watchSeason")} ${season}`}
               </Link>
               <Link
                 href={href("pumpkinWorld", locale)}
                 className="border-b-2 border-ink/25 py-1 text-ink transition-colors hover:border-pumpkin hover:text-pumpkin"
               >
-                Co u nás uvidíte
+                {c("whatYouSee")}
               </Link>
             </div>
           </div>
@@ -63,9 +68,9 @@ export function Home({ locale }: PageProps) {
           <div className="relative hidden justify-self-end lg:-mt-10 lg:block">
             <GourdPlate gourd={GOURDS[0]} size={430} seed={3} className="text-ink" />
             <figcaption className="absolute -bottom-4 left-4 max-w-56 border-l-2 border-pumpkin pl-3">
-              <p className="font-display text-lg font-semibold">{GOURDS[0].name}</p>
+              <p className="font-display text-lg font-semibold">{gourdName(GOURDS[0], locale)}</p>
               <p className="tabular text-[0.72rem] text-ink-faint">{GOURDS[0].latin}</p>
-              <p className="mt-1 text-[0.86rem] text-ink-soft">{GOURDS[0].use}</p>
+              <p className="mt-1 text-[0.86rem] text-ink-soft">{gourdUse(GOURDS[0], locale)}</p>
             </figcaption>
           </div>
         </div>
@@ -79,9 +84,9 @@ export function Home({ locale }: PageProps) {
       <section className="bg-paper-deep">
         <div className="mx-auto grid max-w-[88rem] gap-px overflow-hidden px-5 pb-4 pt-6 sm:px-8 sm:pb-8 md:grid-cols-3">
           {[
-            { k: "Sezóna", v: "20. 9. — 2. 11.", n: `Ročník ${season}` },
-            { k: "Otevřeno", v: "st–pá 14—18", n: "so–ne a svátky 10—18" },
-            { k: "Vstupné", v: "120 / 100 Kč", n: "děti do 2 let zdarma · pes 10 Kč" },
+            { k: c("statSeason"), v: "20. 9. — 2. 11.", n: `${c("statSeasonNote")} ${season}` },
+            { k: c("statOpen"), v: c("statOpenValue"), n: c("statOpenNote") },
+            { k: c("statPrice"), v: c("statPriceValue"), n: c("statPriceNote") },
           ].map((x) => (
             <div key={x.k} className="py-6 md:px-8 md:first:pl-0">
               <p className="text-[0.72rem] uppercase tracking-[0.28em] text-ink-faint">{x.k}</p>
@@ -99,8 +104,8 @@ export function Home({ locale }: PageProps) {
       <section className="mx-auto max-w-[88rem] px-5 py-24 sm:px-8">
         <SectionHead
           plate="I"
-          title="Co se na statku dá dělat"
-          lead="Nic z toho není atrakce postavená pro návštěvníky. Je to fungující statek, jen jsme na dva měsíce otevřeli vrata."
+          title={c("doTitle")}
+          lead={c("doLead")}
         />
 
         <div className="mt-14 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
@@ -133,7 +138,7 @@ export function Home({ locale }: PageProps) {
       <section className="border-t-2 border-ink/12 bg-paper-deep/40 py-16">
         <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
           <p className="text-[0.74rem] uppercase tracking-[0.28em] text-ink-faint">
-            Ze statku
+            {c("photosLabel")}
           </p>
         </div>
         <PhotoStrip photos={FARM_PHOTOS} className="mt-8 mx-auto max-w-[88rem]" />
@@ -146,8 +151,8 @@ export function Home({ locale }: PageProps) {
         <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
           <SectionHead
             plate="II"
-            title="Odrůdy, které tu letos rostou"
-            lead="Semena vozíme od švýcarského a německého dodavatele. Vlastní osivo nenabízíme — dýně se navzájem spráší a příští rok by z nich vyrostlo něco jiného."
+            title={c("varietiesTitle")}
+            lead={c("varietiesLead")}
           />
         </div>
 
@@ -160,16 +165,16 @@ export function Home({ locale }: PageProps) {
             >
               <GourdPlate gourd={g} size={210} seed={i} className="text-ink" />
               <hr className="rule-hand my-3" />
-              <h3 className="font-display text-xl font-semibold">{g.name}</h3>
+              <h3 className="font-display text-xl font-semibold">{gourdName(g, locale)}</h3>
               <p className="tabular text-[0.72rem] italic text-ink-faint">{g.latin}</p>
               <dl className="mt-2 space-y-0.5 text-[0.88rem] text-ink-soft">
                 <div className="flex gap-2">
-                  <dt className="text-ink-faint">Váha</dt>
+                  <dt className="text-ink-faint">{c("weight")}</dt>
                   <dd className="tabular">{g.weight}</dd>
                 </div>
                 <div>
-                  <dt className="sr-only">Vhodná na</dt>
-                  <dd>{g.use}</dd>
+                  <dt className="sr-only">{c("goodFor")}</dt>
+                  <dd>{gourdUse(g, locale)}</dd>
                 </div>
               </dl>
             </li>
@@ -184,8 +189,8 @@ export function Home({ locale }: PageProps) {
         <div className="grid gap-14 lg:grid-cols-[0.9fr_1.1fr]">
           <SectionHead
             plate="III"
-            title="Kdo tu bydlí"
-            lead="Hospodářská zvířata typická pro český venkov. Většina se dá pohladit, kozičky si berou granule přímo z ruky."
+            title={c("animalsTitle")}
+            lead={c("animalsLead")}
           />
           <ul className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
             {animals.map((a) => (
@@ -206,7 +211,7 @@ export function Home({ locale }: PageProps) {
           vypadá jako referenční informace. */}
       <section className="border-t-2 border-ink/12 bg-paper-deep/50">
         <div className="mx-auto max-w-[88rem] px-5 py-20 sm:px-8">
-          <SectionHead plate="IV" title="Než vyrazíte" />
+          <SectionHead plate="IV" title={c("beforeTitle")} />
           <dl className="mt-10 grid gap-x-12 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
             {practical.map((p) => (
               <div key={p.label} className="border-t border-ink/15 pt-3">
@@ -229,24 +234,22 @@ export function Home({ locale }: PageProps) {
       <section className="mx-auto max-w-[88rem] px-5 py-24 text-center sm:px-8">
         <h2 className="font-display letterpress mx-auto max-w-3xl text-balance text-[clamp(2.2rem,6vw,4.2rem)] font-semibold">
           {mood.ticketsOpen
-            ? "Vyberte si den a hodinu"
-            : `Sezóna ${season} začíná 20. září`}
+            ? c("ctaOpen")
+            : `${c("ctaClosedPrefix")} ${season} ${c("ctaClosedSuffix")}`}
         </h2>
         <p className="mx-auto mt-5 max-w-xl text-pretty text-lg text-ink-soft">
-          {mood.ticketsOpen
-            ? "Vstup je na konkrétní čas, aby se na statku nesešlo víc lidí, než unese. Vstupenku dostanete e-mailem jako QR kód."
-            : "Nechte nám e-mail a dáme vám vědět v den, kdy se otevře prodej vstupenek. Nic jiného vám posílat nebudeme."}
+          {mood.ticketsOpen ? c("ctaOpenLead") : c("ctaClosedLead")}
         </p>
         <div className="mt-9">
           <Link
             href={href("tickets", locale)}
             className="inline-block rounded-full bg-pumpkin px-8 py-4 text-lg text-paper-bright transition-colors hover:bg-ember"
           >
-            {mood.ticketsOpen ? "Na vstupenky" : "Chci vědět o startu"}
+            {mood.ticketsOpen ? c("ctaButtonOpen") : c("ctaButtonClosed")}
           </Link>
         </div>
         <p className="tabular mt-8 text-[0.84rem] text-ink-faint">
-          Nebo zavolejte: {FARM.phoneHuman}
+          {c("orCall")}: {FARM.phoneHuman}
         </p>
       </section>
     </>

@@ -6,6 +6,8 @@
  * naplněním sezóny v klidu vypsat a zkontrolovat.
  */
 
+import type { Locale } from "@/lib/i18n/config";
+
 export interface OpeningRule {
   /** Dny v týdnu, 0 = neděle. */
   weekdays: number[];
@@ -110,10 +112,44 @@ export function planSeason(plan: SeasonPlan): PlannedDay[] {
 
 /** Druhy vstupenek. Ceny 2025; v administraci se přepisují. */
 export const TICKET_TYPES = [
-  { code: "dospely", name: "Dospělý", price: 120, countsToCapacity: true, note: "" },
-  { code: "snizene", name: "Snížené", price: 100, countsToCapacity: true, note: "dítě, student, senior, ZTP" },
-  { code: "dite_do_2", name: "Dítě do 2 let", price: 0, countsToCapacity: false, note: "" },
-  { code: "pes", name: "Pes", price: 10, countsToCapacity: false, note: "" },
-] as const;
+  {
+    code: "dospely",
+    name: { cs: "Dospělý", en: "Adult", de: "Erwachsener" },
+    price: 120,
+    countsToCapacity: true,
+    note: { cs: "", en: "", de: "" },
+  },
+  {
+    code: "snizene",
+    name: { cs: "Snížené", en: "Reduced", de: "Ermäßigt" },
+    price: 100,
+    countsToCapacity: true,
+    note: {
+      cs: "dítě, student, senior, ZTP",
+      en: "child, student, senior, disabled",
+      de: "Kind, Student, Senior, Behinderte",
+    },
+  },
+  {
+    code: "dite_do_2",
+    name: { cs: "Dítě do 2 let", en: "Child under 2", de: "Kind unter 2 Jahren" },
+    price: 0,
+    countsToCapacity: false,
+    note: { cs: "", en: "", de: "" },
+  },
+  {
+    code: "pes",
+    name: { cs: "Pes", en: "Dog", de: "Hund" },
+    price: 10,
+    countsToCapacity: false,
+    note: { cs: "", en: "", de: "" },
+  },
+] as const satisfies ReadonlyArray<{
+  code: string;
+  name: Record<Locale, string>;
+  price: number;
+  countsToCapacity: boolean;
+  note: Record<Locale, string>;
+}>;
 
 export type TicketTypeCode = (typeof TICKET_TYPES)[number]["code"];

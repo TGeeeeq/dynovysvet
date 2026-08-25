@@ -3,6 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { CapacityMeter } from "./CapacityMeter";
 import { TICKET_TYPES, type TicketTypeCode } from "@/lib/tickets/schedule";
+import { TICKETS } from "@/content/copy/tickets";
+import { copyFor } from "@/content/copy/types";
+import { NUMBER_LOCALE, type Locale } from "@/lib/i18n/config";
+import { makeT } from "@/lib/i18n/dict";
 
 export interface SlotView {
   id: string;
@@ -16,17 +20,32 @@ export interface DayView {
   slots: SlotView[];
 }
 
-const DAY_SHORT = ["ne", "po", "út", "st", "čt", "pá", "so"];
-const MONTHS = ["ledna", "února", "března", "dubna", "května", "června",
-  "července", "srpna", "září", "října", "listopadu", "prosince"];
-
-function fmtDay(date: string) {
-  const d = new Date(`${date}T12:00:00Z`);
-  return { wd: DAY_SHORT[d.getUTCDay()], num: d.getUTCDate(), month: MONTHS[d.getUTCMonth()] };
+/**
+ * Datum vykresluje `Intl`, ne vlastní tabulka měsíců. České „26. září"
+ * i německé „26. September" tak vzniknou ze stejného kódu a nemusíme
+ * udržovat tři seznamy názvů měsíců.
+ */
+function makeFmtDay(locale: Locale) {
+  const tag = NUMBER_LOCALE[locale];
+  const wdFmt = new Intl.DateTimeFormat(tag, { weekday: "short", timeZone: "UTC" });
+  const monthFmt = new Intl.DateTimeFormat(tag, { month: "long", timeZone: "UTC" });
+  const monthShortFmt = new Intl.DateTimeFormat(tag, { month: "short", timeZone: "UTC" });
+  return (date: string) => {
+    const d = new Date(`${date}T12:00:00Z`);
+    return {
+      wd: wdFmt.format(d).replace(/\.$/, ""),
+      num: d.getUTCDate(),
+      month: monthFmt.format(d),
+      monthShort: monthShortFmt.format(d).replace(/\.$/, ""),
+    };
+  };
 }
 const hhmm = (iso: string) => iso.slice(11, 16);
 
-export function SlotPicker({ days: initialDays }: { days: DayView[] }) {
+export function SlotPicker({ days: initialDays, locale }: { days: DayView[]; locale: Locale }) {
+  const c = copyFor(TICKETS, locale);
+  const t = makeT(locale);
+  const fmtDay = useMemo(() => makeFmtDay(locale), [locale]);
   const [days, setDays] = useState(initialDays);
   const [dayIdx, setDayIdx] = useState(0);
   const [slotId, setSlotId] = useState<string | null>(null);
@@ -64,11 +83,11 @@ export function SlotPicker({ days: initialDays }: { days: DayView[] }) {
   }, []);
 
   const counted = useMemo(
-    () => TICKET_TYPES.filter((t) => t.countsToCapacity).reduce((a, t) => a + qty[t.code], 0),
+    () => TICKET_TYPES.filter((x) => x.countsToCapacity).reduce((a, x) => a + qty[x.code], 0),
     [qty],
   );
   const total = useMemo(
-    () => TICKET_TYPES.reduce((a, t) => a + qty[t.code] * t.price, 0),
+    () => TICKET_TYPES.reduce((a, x) => a + qty[x.code] * x.price, 0),
     [qty],
   );
   const remaining = slot ? slot.capacity - slot.reserved : 0;
@@ -77,10 +96,7 @@ export function SlotPicker({ days: initialDays }: { days: DayView[] }) {
 
   if (!day) {
     return (
-      <p className="text-lg text-ink-soft">
-        Termíny pro nadcházející sezónu ještě nejsou vypsané. Nechte nám e-mail
-        a dáme vám vědět, jakmile se prodej otevře.
-      </p>
+      <p className="text-lg text-ink-soft">{c("noDates")}</p>
     );
   }
 
@@ -90,7 +106,7 @@ export function SlotPicker({ days: initialDays }: { days: DayView[] }) {
         {/* ── Kalendář sezóny ─────────────────────────────────────────── */}
         <fieldset>
           <legend className="text-[0.74rem] uppercase tracking-[0.2em] text-ink-faint">
-            Vyberte den
+            {t("chooseDay")}
           </legend>
           <ul className="mt-4 flex flex-wrap gap-2">
             {days.map((d, i) => {
@@ -115,7 +131,7 @@ export function SlotPicker({ days: initialDays }: { days: DayView[] }) {
                   >
                     <span className="text-[0.66rem] uppercase tracking-wider opacity-70">{f.wd}</span>
                     <span className="tabular text-[1.05rem] font-medium leading-tight">{f.num}</span>
-                    <span className="text-[0.6rem] opacity-60">{f.month.slice(0, 3)}</span>
+                    <span className="text-[0.6rem] opacity-60">{f.monthShort}</span>
                   </button>
                 </li>
               );
@@ -126,12 +142,9 @@ export function SlotPicker({ days: initialDays }: { days: DayView[] }) {
         {/* ── Časové sloty ────────────────────────────────────────────── */}
         <fieldset className="mt-12">
           <legend className="text-[0.74rem] uppercase tracking-[0.2em] text-ink-faint">
-            Vyberte čas příchodu
+            {t("chooseTime")}
           </legend>
-          <p className="mt-2 text-[0.9rem] text-ink-soft">
-            Vstup je na konkrétní hodinu, ať se na statku nesejde víc lidí, než unese.
-            Uvnitř pak můžete zůstat, jak dlouho chcete.
-          </p>
+          <p className="mt-2 text-[0.9rem] text-ink-soft">{c("slotsLead")}</p>
 
           <ul className="mt-5 divide-y divide-ink/12 border-y border-ink/12">
             {day.slots.map((s) => {
@@ -151,13 +164,13 @@ export function SlotPicker({ days: initialDays }: { days: DayView[] }) {
                     <span className={`tabular text-lg ${on ? "text-pumpkin" : "text-ink"}`}>
                       {hhmm(s.startsAt)}
                     </span>
-                    <CapacityMeter remaining={free} capacity={s.capacity} className="max-w-56" />
+                    <CapacityMeter remaining={free} capacity={s.capacity} locale={locale} className="max-w-56" />
                     <span
                       className={`rounded-full border-2 px-4 py-1.5 text-[0.86rem] ${
                         on ? "border-ink bg-ink text-paper" : "border-ink/20 text-ink-soft"
                       }`}
                     >
-                      {on ? "Vybráno" : free <= 0 ? "Plno" : "Vybrat"}
+                      {on ? c("selected") : free <= 0 ? c("slotFull") : c("select")}
                     </span>
                   </button>
                 </li>
@@ -171,22 +184,24 @@ export function SlotPicker({ days: initialDays }: { days: DayView[] }) {
           Lepí se při scrollu, aby cena byla vidět pořád. */}
       <aside className="lg:sticky lg:top-6">
         <div className="border-2 border-ink/15 bg-paper-bright p-6">
-          <h2 className="font-display text-2xl font-semibold">Vstupenky</h2>
+          <h2 className="font-display text-2xl font-semibold">{c("basketTitle")}</h2>
 
           <ul className="mt-5 space-y-4">
-            {TICKET_TYPES.map((t) => (
-              <li key={t.code} className="flex items-center gap-3">
+            {TICKET_TYPES.map((tt) => (
+              <li key={tt.code} className="flex items-center gap-3">
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[0.98rem]">{t.name}</p>
+                  <p className="truncate text-[0.98rem]">{tt.name[locale]}</p>
                   <p className="tabular text-[0.8rem] text-ink-faint">
-                    {t.price === 0 ? "zdarma" : `${t.price} Kč`}
-                    {t.note && ` · ${t.note}`}
+                    {tt.price === 0 ? c("free") : `${tt.price} ${t("currency")}`}
+                    {tt.note[locale] && ` · ${tt.note[locale]}`}
                   </p>
                 </div>
                 <Stepper
-                  label={t.name}
-                  value={qty[t.code]}
-                  onChange={(v) => setQty((q) => ({ ...q, [t.code]: v }))}
+                  label={tt.name[locale]}
+                  minusLabel={c("stepperMinus")}
+                  plusLabel={c("stepperPlus")}
+                  value={qty[tt.code]}
+                  onChange={(v) => setQty((q) => ({ ...q, [tt.code]: v }))}
                 />
               </li>
             ))}
@@ -195,8 +210,8 @@ export function SlotPicker({ days: initialDays }: { days: DayView[] }) {
           <hr className="rule-hand my-5" />
 
           <div className="flex items-baseline justify-between">
-            <span className="text-[0.74rem] uppercase tracking-[0.2em] text-ink-faint">Celkem</span>
-            <span className="tabular text-2xl font-medium">{total} Kč</span>
+            <span className="text-[0.74rem] uppercase tracking-[0.2em] text-ink-faint">{t("total")}</span>
+            <span className="tabular text-2xl font-medium">{total} {t("currency")}</span>
           </div>
 
           {slot && (
@@ -207,7 +222,7 @@ export function SlotPicker({ days: initialDays }: { days: DayView[] }) {
 
           {tooMany && (
             <p role="alert" className="mt-3 text-[0.88rem] text-ember">
-              V tomto čase už zbývá jen {remaining} míst. Zkuste jiný čas nebo snižte počet.
+              {c("tooMany").replace("{n}", String(remaining))}
             </p>
           )}
 
@@ -216,13 +231,10 @@ export function SlotPicker({ days: initialDays }: { days: DayView[] }) {
             disabled={!canSubmit}
             className="mt-5 w-full rounded-full bg-ink px-6 py-3.5 text-paper transition-colors enabled:hover:bg-ember disabled:cursor-not-allowed disabled:opacity-35"
           >
-            {!slot ? "Nejdřív vyberte čas" : counted === 0 ? "Přidejte vstupenku" : "Pokračovat k platbě"}
+            {!slot ? c("pickTimeFirst") : counted === 0 ? c("addTicket") : c("continueToPayment")}
           </button>
 
-          <p className="mt-4 text-[0.8rem] leading-relaxed text-ink-faint">
-            Platí se kartou online. Vstupenku dostanete e-mailem jako QR kód —
-            stačí ho u vstupu ukázat v telefonu. Místo vám držíme 15 minut.
-          </p>
+          <p className="mt-4 text-[0.8rem] leading-relaxed text-ink-faint">{c("paymentNote")}</p>
         </div>
       </aside>
     </div>
@@ -230,13 +242,19 @@ export function SlotPicker({ days: initialDays }: { days: DayView[] }) {
 }
 
 function Stepper({
-  label, value, onChange,
-}: { label: string; value: number; onChange: (v: number) => void }) {
+  label, minusLabel, plusLabel, value, onChange,
+}: {
+  label: string;
+  minusLabel: string;
+  plusLabel: string;
+  value: number;
+  onChange: (v: number) => void;
+}) {
   return (
     <div className="flex shrink-0 items-center gap-1">
-      <StepBtn onClick={() => onChange(Math.max(0, value - 1))} disabled={value === 0} aria-label={`${label}: ubrat`}>–</StepBtn>
+      <StepBtn onClick={() => onChange(Math.max(0, value - 1))} disabled={value === 0} aria-label={`${label}: ${minusLabel}`}>–</StepBtn>
       <span className="tabular w-7 text-center text-[1.02rem]">{value}</span>
-      <StepBtn onClick={() => onChange(Math.min(30, value + 1))} aria-label={`${label}: přidat`}>+</StepBtn>
+      <StepBtn onClick={() => onChange(Math.min(30, value + 1))} aria-label={`${label}: ${plusLabel}`}>+</StepBtn>
     </div>
   );
 }
