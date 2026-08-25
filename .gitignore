@@ -9,6 +9,7 @@ out/
 build/
 next-env.d.ts
 .turbo/
+tsconfig.tsbuildinfo
 
 # běhové
 .env

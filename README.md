@@ -1,8 +1,8 @@
 # Dýňový svět — Statek u Pipků
 
-Web pro sezónní akci na statku v Nové Vsi u Leštiny: prezentace, prodej
-časovaných vstupenek s živou kapacitou, poptávkové formuláře pro školy
-a pronájem prostor.
+Web pro sezónní akci na statku v Nové Vsi u Leštiny: prezentace ve třech
+jazycích, prodej časovaných vstupenek s živou kapacitou, poptávkové
+formuláře pro školy a pronájem prostor a administrace pro majitele.
 
 Nahrazuje šablonový web na Webnode.
 
@@ -60,6 +60,28 @@ Webhook je idempotentní přes unikátní index na ID transakce. Webhook, který
 dorazí až po vypršení rezervace, zkusí rezervovat znovu; když neprojde, jde
 objednávka do stavu `k_vraceni`. Nikdy se tiše nevezmou peníze bez místa.
 
+### Tři jazyky, jazyk je v cestě
+
+Čeština běží na kořeni (`/vstupenky`), angličtina a němčina mají prefix
+i **vlastní přeložené slugy** (`/en/tickets`, `/de/eintrittskarten`).
+Cookie by znamenala, že jedna adresa vrací tři různé obsahy — vyhledávač
+by indexoval jen jednu a sdílený odkaz by se příteli otevřel jinak než
+odesílateli.
+
+- Registr adres: `src/lib/i18n/routes.ts`. **České slugy se nesmí měnit** —
+  míří na ně přesměrování z Webnode a všechno, co kdo za pět let nasdílel.
+- Stránky nejsou soubory v `app/`, ale komponenty v `src/components/pages/`;
+  router je dohledává podle klíče (`src/components/pages/registry.ts`).
+  Se složkami by přeložené adresy nešly udělat.
+- Aplikace uvnitř zná jen tvar `/[locale]/…`; rozdíl proti kořenu zahlazuje
+  přepisem `src/proxy.ts`. Přepis, ne přesměrování — návštěvník ani Google
+  žádný skok neuvidí.
+- Texty rámu (navigace, tlačítka, hlášky) jsou v `src/lib/i18n/dict.ts`,
+  texty stránek v `src/content/copy/*.ts`, dlouhý obsah (recepty, pěstování,
+  právní texty) v `src/content/*.{en,de}.ts`.
+- `tests/content-parity.test.ts` hlídá, že se překlady nerozejdou se
+  strukturou originálu — chybějící recept v němčině se jinak pozná pozdě.
+
 ### Živá kapacita bez zabití databáze
 
 `/api/dostupnost` je cachovaný na CDN 10 s se `stale-while-revalidate`.
@@ -71,6 +93,39 @@ rozptylem, jinak by se všichni zesynchronizovali do jedné vlny.
 
 Na statku je slabý signál. Vstupenkový token je podepsaný a ověřitelný
 lokálně, bez dotazu na server.
+
+### Administrace
+
+`/admin`, česky, jednojazyčně — používá ji majitel. Přihlášení heslem
+(scrypt z `node:crypto`, žádná další závislost), session je neuhodnutelný
+token, v databázi z něj leží jen SHA-256. Neúspěšné pokusy se počítají
+v databázi, ne v paměti procesu: na serverless je in-memory limit bezcenný,
+protože každá instance počítá zvlášť.
+
+Rozcestník je v `src/lib/admin/nav.ts` a je poskládaný podle toho, jak
+o webu přemýšlí majitel — Prodej, Provoz, Obsah, Účet — ne podle tabulek.
+Každá změna se zapisuje do `audit_log`.
+
+Vizuálně navazuje na web (papír, inkoust, vlasové linky), ale je to pracovní
+nástroj: hustší sazba, žádné ilustrace, čísla v tabulkových číslicích.
+
+### Bezpečnost
+
+- Veřejné stránky mají CSP **bez nonce** — nonce se musí lišit request od
+  requestu, což by celý statický web donutilo generovat se pokaždé znovu,
+  a to je přesně to, co si v den otevření registrací nemůžeme dovolit.
+  Veřejné stránky nikde nevykreslují cizí HTML, takže nonce nemá co chránit.
+  Administrace, kde je v sázce přihlašovací cookie, dostává v `src/proxy.ts`
+  ostré CSP **s nonce**; dynamická je tak jako tak.
+- Hlavičky jsou v `next.config.ts`, ne ve `vercel.json` — nesmí zmizet jen
+  proto, že se hosting přesune jinam.
+- Texty z administrace se vykreslují **vždy jako text**, nikdy přes
+  `dangerouslySetInnerHTML`. HTML se z formulářů nepřijímá.
+- `/api/cron/uvolnit-rezervace` v produkci vyžaduje `CRON_SECRET`; bez něj
+  vrací 503 místo toho, aby běžel otevřeně.
+- Chybová hláška u přihlášení je vždy stejná, ať účet neexistuje, má špatné
+  heslo, nebo je zamčený. I ověření hesla u neexistujícího účtu spálí
+  srovnatelný čas — jinak by délka odpovědi prozradila platné e-maily.
 
 ## Designový systém
 
@@ -102,8 +157,12 @@ Napojení na Vercel se dělá jednou ručně: **Import Project → vybrat repozi
 → vyplnit proměnné z `.env.example`**. Region nastavte na `fra1` (Frankfurt),
 kvůli latenci k databázi.
 
-Cron na uvolňování propadlých rezervací je v `vercel.json` a potřebuje
-proměnnou `CRON_SECRET`.
+Cron na uvolňování propadlých rezervací je v `vercel.json` a **vyžaduje**
+proměnnou `CRON_SECRET` — bez ní se v produkci neuvolní nic.
+
+První přihlášení do administrace: nastavte `ADMIN_BOOTSTRAP_EMAIL`
+a `ADMIN_BOOTSTRAP_PASSWORD`, přihlaste se a **hned si heslo změňte**
+(aplikace si o to sama řekne). Pak obě proměnné z prostředí smažte.
 
 ### Přechod domény z Webnode
 
@@ -119,6 +178,7 @@ proměnnou `CRON_SECRET`.
 
 - Pokladna a napojení na Comgate
 - `/brana` — offline skenování vstupenek u vstupu
-- Administrace pro majitele
 - E-shop s fyzickým zbožím
-- Anglická mutace (staré `/en/*` se zatím přesměrovávají na češtinu)
+- Uživatelské účty s historií objednávek (zatím nákup bez registrace)
+- Nahrávání fotek z administrace (zatím se cesta zadává ručně)
+- Dárkové poukazy a sběr e-mailů mimo sezónu
