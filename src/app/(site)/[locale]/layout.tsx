@@ -5,6 +5,7 @@ import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { VineSpine } from "@/components/illustrations/Vine";
 import { FarmJsonLd } from "@/components/site/StructuredData";
+import { MobileTicketBar } from "@/components/site/MobileTicketBar";
 import { FARM } from "@/content/farm";
 import { SEO } from "@/content/seo";
 import { HTML_LANG, LOCALES, OG_LOCALE, isLocale } from "@/lib/i18n/config";
@@ -49,7 +50,7 @@ export default async function SiteLayout({ children, params }: LayoutProps<"/[lo
 
   return (
     <html lang={HTML_LANG[locale]} className={`${fontVariables} h-full antialiased`}>
-      <body className="grain relative flex min-h-full flex-col overflow-x-clip">
+      <body className="grain relative flex min-h-full flex-col overflow-x-clip pb-[env(safe-area-inset-bottom)]">
         <a
           href="#obsah"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-5 focus:py-2 focus:text-paper"
@@ -66,6 +67,7 @@ export default async function SiteLayout({ children, params }: LayoutProps<"/[lo
           {children}
         </main>
         <Footer locale={locale} />
+        <MobileTicketBar locale={locale} />
       </body>
     </html>
   );
