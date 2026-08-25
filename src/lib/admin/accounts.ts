@@ -286,6 +286,28 @@ export function auditActionLabel(action: string): string {
   return AUDIT_ACTION_LABELS[action] ?? action;
 }
 
+/**
+ * Čeho se záznam týkal. `entity` je název tabulky, což do administrace nepatří —
+ * majitel hledá „objednávku", ne `orders`.
+ */
+export const AUDIT_ENTITY_LABELS: Record<string, string> = {
+  admin_user: "přístup",
+  admin_session: "přihlášení",
+  order: "objednávka",
+  ticket: "vstupenka",
+  ticket_type: "druh vstupenky",
+  event_day: "provozní den",
+  time_slot: "časovka",
+  inquiry: "poptávka",
+  news: "aktualita",
+  content_block: "text stránky",
+  settings: "nastavení",
+};
+
+export function auditEntityLabel(entity: string): string {
+  return AUDIT_ENTITY_LABELS[entity] ?? entity;
+}
+
 export interface AuditRow {
   id: string;
   createdAt: Date;

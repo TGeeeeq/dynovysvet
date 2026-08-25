@@ -18,10 +18,6 @@ export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = "Dýňový svět — Statek u Pipků";
 
-export function generateImageMetadata() {
-  return [{ id: "hlavni", size, contentType, alt }];
-}
-
 export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
 }

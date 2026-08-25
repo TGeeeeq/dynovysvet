@@ -10,7 +10,7 @@ import type { OrderStatus } from "@/lib/db/schema";
  * v JavaScriptu, a bez připojené databáze se vrací prázdno místo výjimky.
  *
  * Zásahy do stavu objednávky jsou psané jako podmíněný UPDATE („změň jen
- * tehdy, když je objednávka pořád v tom stavu, který jsem viděl"). Kdybychom
+ * tehdy, když je objednávka pořád v tom stavu, který jsem viděl“). Kdybychom
  * stav nejdřív přečetli a pak zapsali, dvojklik na tlačítko nebo dvě otevřené
  * záložky by akci provedly dvakrát — u peněz a u kapacity je to neúnosné.
  */

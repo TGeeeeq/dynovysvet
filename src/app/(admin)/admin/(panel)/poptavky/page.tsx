@@ -4,7 +4,18 @@ import { z } from "zod";
 import { getDb, hasDatabaseUrl, schema } from "@/lib/db/client";
 import { inquiryKind, type InquiryKind } from "@/lib/db/schema";
 import { dateTime, INQUIRY_KIND, longDate } from "@/lib/admin/format";
-import { Badge, Button, Empty, Hint, Notice, PageTitle, SectionTitle, Stat } from "@/components/admin/ui";
+import {
+  Badge,
+  Button,
+  Empty,
+  Hint,
+  INPUT_CLASS,
+  LABEL_CLASS,
+  Notice,
+  PageTitle,
+  SectionTitle,
+  Stat,
+} from "@/components/admin/ui";
 import { oznacitVyrizene, smazatPoptavku, vratitNevyrizene } from "./actions";
 
 export const metadata = { title: "Poptávky" };
@@ -164,14 +175,14 @@ export default async function InquiriesPage({ searchParams }: { searchParams: Pr
         <SectionTitle>Výběr</SectionTitle>
         <form method="get" action="/admin/poptavky" className="mt-5 grid gap-x-8 gap-y-6 sm:grid-cols-3">
           <div>
-            <label htmlFor="druh" className="block text-[0.72rem] uppercase tracking-[0.2em] text-ink-faint">
+            <label htmlFor="druh" className={LABEL_CLASS}>
               Druh poptávky
             </label>
             <select
               id="druh"
               name="druh"
               defaultValue={druh ?? ""}
-              className="mt-2 block w-full border-0 border-b-2 border-ink/20 bg-transparent px-0 py-2.5 text-[1.05rem] text-ink focus:border-pumpkin focus:outline-none"
+              className={INPUT_CLASS}
             >
               <option value="">Všechny druhy</option>
               {inquiryKind.enumValues.map((value) => (
@@ -183,14 +194,14 @@ export default async function InquiriesPage({ searchParams }: { searchParams: Pr
           </div>
 
           <div>
-            <label htmlFor="stav" className="block text-[0.72rem] uppercase tracking-[0.2em] text-ink-faint">
+            <label htmlFor="stav" className={LABEL_CLASS}>
               Stav
             </label>
             <select
               id="stav"
               name="stav"
               defaultValue={stav ?? ""}
-              className="mt-2 block w-full border-0 border-b-2 border-ink/20 bg-transparent px-0 py-2.5 text-[1.05rem] text-ink focus:border-pumpkin focus:outline-none"
+              className={INPUT_CLASS}
             >
               <option value="">Vyřízené i nevyřízené</option>
               <option value="nevyrizene">Jen nevyřízené</option>
