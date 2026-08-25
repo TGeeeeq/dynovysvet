@@ -70,7 +70,9 @@ export function FarmJsonLd({ locale }: { locale: Locale }) {
         eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
         location: place,
         organizer: { "@type": "Organization", name: FARM.name, url: BASE },
-        image: `${BASE}/og.png`,
+        // Skutečná fotka statku, ne grafika — Google ji ukazuje u události
+        // ve výsledcích hledání a lidé se rozhodují podle ní.
+        image: `${BASE}/foto/img_20220930_135328_resized_20220930_020047533-1600.webp`,
         // Ceny bez slev; typy vstupenek jsou jednotlivé nabídky.
         offers: TICKET_TYPES.filter((t) => t.price > 0).map((t) => ({
           "@type": "Offer",
