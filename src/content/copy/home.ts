@@ -15,9 +15,9 @@ export const HOME = {
     de: "Wir bauen Kürbisse an. Im Herbst öffnen wir Hof, Scheune und Garten und zeigen Ihnen, wie viele Sorten es wirklich gibt. Die Kinder erobern derweil die Strohburg.",
   },
   watchSeason: {
-    cs: "Hlídat start sezóny",
-    en: "Get told when the season opens",
-    de: "Über den Saisonstart informieren",
+    cs: "Hlídat start sezóny {season}",
+    en: "Tell me when the {season} season opens",
+    de: "Über den Saisonstart {season} informieren",
   },
   whatYouSee: { cs: "Co u nás uvidíte", en: "What there is to see", de: "Was es zu sehen gibt" },
 

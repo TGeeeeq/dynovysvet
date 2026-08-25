@@ -52,7 +52,7 @@ export function Home({ locale }: PageProps) {
                 href={href("tickets", locale)}
                 className="rounded-full bg-ink px-7 py-3.5 text-paper transition-colors hover:bg-ember"
               >
-                {mood.ticketsOpen ? t("buyTickets") : `${c("watchSeason")} ${season}`}
+                {mood.ticketsOpen ? t("buyTickets") : c("watchSeason").replace("{season}", String(season))}
               </Link>
               <Link
                 href={href("pumpkinWorld", locale)}
