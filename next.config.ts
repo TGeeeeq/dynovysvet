@@ -129,7 +129,14 @@ const nextConfig: NextConfig = {
       // Čeština žije na kořeni. `/cs/…` je vnitřní tvar, který přepisuje
       // middleware — kdyby na něj někdo trefil zvenčí, byla by to duplicita.
       { source: "/cs", destination: "/", permanent: true },
-      { source: "/cs/:path*", destination: "/:path*", permanent: true },
+      // Výjimka pro náhledový obrázek: Next ho generuje na adrese
+      // `/cs/opengraph-image-<hash>` a crawler Facebooku si zaslouží
+      // rovnou 200, ne skok.
+      {
+        source: "/cs/:path((?!opengraph-image).*)",
+        destination: "/:path*",
+        permanent: true,
+      },
       { source: "/servers/frontend/:path*", destination: "/", permanent: true },
       // Zbytek koncových lomítek, který nepatří žádné staré adrese.
       { source: "/:path+/", destination: "/:path+", permanent: true },

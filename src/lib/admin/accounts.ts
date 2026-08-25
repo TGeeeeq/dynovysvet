@@ -1,6 +1,6 @@
 import "server-only";
 import { randomInt } from "node:crypto";
-import { and, count, desc, eq, isNull, sql } from "drizzle-orm";
+import { and, count, desc, eq, isNull, ne, sql } from "drizzle-orm";
 import { getDb, hasDatabaseUrl, schema } from "@/lib/db/client";
 import { checkPasswordStrength } from "./password";
 import type { AdminRole } from "@/lib/db/schema";
@@ -116,7 +116,7 @@ export async function countOtherActiveOwners(exceptId: string): Promise<number> 
       and(
         eq(schema.adminUsers.role, "majitel"),
         isNull(schema.adminUsers.disabledAt),
-        sql`${schema.adminUsers.id} <> ${exceptId}`,
+        ne(schema.adminUsers.id, exceptId),
       ),
     );
   return row?.n ?? 0;

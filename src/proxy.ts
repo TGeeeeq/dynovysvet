@@ -23,7 +23,11 @@ export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico|foto/|.*\\.[\\w]+$).*)"],
 };
 
-const LOCALE_PREFIXES = LOCALES.filter((l) => l !== DEFAULT_LOCALE).map((l) => `/${l}`);
+// Včetně `/cs`: většinu českých adres sice srovná přesměrování v next.config
+// dřív, než se sem požadavek dostane, ale výjimky (náhledový obrázek, který
+// Next generuje na `/cs/opengraph-image-<hash>`) přijdou už v tomhle tvaru
+// a druhý prefix by z nich udělal `/cs/cs/…`.
+const LOCALE_PREFIXES = LOCALES.map((l) => `/${l}`);
 
 function adminCsp(nonce: string): string {
   return [

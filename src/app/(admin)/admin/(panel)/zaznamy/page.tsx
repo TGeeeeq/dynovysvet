@@ -31,6 +31,13 @@ function one(value: string | string[] | undefined): string | undefined {
   return v && v.length > 0 ? v : undefined;
 }
 
+/**
+ * Filtr „kdo" nese v adrese identifikátor účtu. Ručně přepsaná adresa by
+ * jinak poslala do dotazu nesmysl a Postgres by na neplatném uuid spadl —
+ * proto tvar ověřujeme dřív, než se k databázi vůbec dostaneme.
+ */
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 const SELECT_CLASS =
   "mt-2 block w-full appearance-none border-0 border-b-2 border-ink/20 bg-transparent px-0 py-2.5 text-[1rem] text-ink focus:border-pumpkin focus:outline-none";
 
@@ -60,7 +67,8 @@ export default async function AuditPage({
 
   const sp = await searchParams;
   const akce = one(sp.akce);
-  const kdo = one(sp.kdo);
+  const kdoRaw = one(sp.kdo);
+  const kdo = kdoRaw && UUID.test(kdoRaw) ? kdoRaw : undefined;
   const strana = Number(one(sp.strana) ?? "1");
 
   const [zaznamy, akceVSeznamu, lide] = await Promise.all([

@@ -97,11 +97,11 @@ export const CONTENT_PAGES: Record<string, ContentBlockDef[]> = {
     },
     {
       key: "watchSeason",
-      label: "Tlačítko v úvodu, když prodej ještě neběží (za text se doplní ročník)",
+      label: "Tlačítko v úvodu, když prodej ještě neběží (zápis {season} se nahradí ročníkem — nechte ho v textu)",
       group: "Úvodní část",
-      cs: "Hlídat start sezóny",
-      en: "Get told when the season opens",
-      de: "Über den Saisonstart informieren",
+      cs: "Hlídat start sezóny {season}",
+      en: "Tell me when the {season} season opens",
+      de: "Über den Saisonstart {season} informieren",
     },
     {
       key: "whatYouSee",
