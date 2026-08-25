@@ -46,10 +46,14 @@ export default function proxy(req: NextRequest) {
 
   if (pathname.startsWith("/admin")) {
     const nonce = crypto.randomUUID().replaceAll("-", "");
+    const csp = adminCsp(nonce);
     const headers = new Headers(req.headers);
     headers.set("x-nonce", nonce);
+    // Next hledá nonce v CSP na *požadavku* a sám ho doplní do skriptů,
+    // které generuje. Bez toho by přísné `script-src` shodilo hydrataci.
+    headers.set("Content-Security-Policy", csp);
     const res = NextResponse.next({ request: { headers } });
-    res.headers.set("Content-Security-Policy", adminCsp(nonce));
+    res.headers.set("Content-Security-Policy", csp);
     // Administrace nesmí skončit v cizí cache ani v historii prohlížeče.
     res.headers.set("Cache-Control", "no-store, max-age=0");
     res.headers.set("X-Robots-Tag", "noindex, nofollow");
