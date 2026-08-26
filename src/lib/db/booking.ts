@@ -12,7 +12,7 @@
  * platební bránu. Podmíněný UPDATE drží zámek jednotky milisekund.
  */
 import { asc, inArray, sql } from 'drizzle-orm';
-import { getDb, type Queryable, type Tx } from './client';
+import { getDb, hasDatabaseUrl, type Queryable, type Tx } from './client';
 import { orderStatus, timeSlots, type OrderStatus } from './schema';
 
 /* ------------------------------------------------------------------ typy */
@@ -182,6 +182,43 @@ export async function releaseExpiredHolds(): Promise<number> {
 
     return Number(res.rows[0]?.released_holds ?? 0);
   });
+}
+
+/**
+ * Uvolnění propadlých rezervací „při čtení".
+ *
+ * Uklízeč nesmí být jediná cesta, jak se místo vrátí do prodeje. Cron je
+ * vlastnost hostingu — na Vercel Hobby jde spustit jen jednou denně, jinde
+ * nemusí být vůbec — a kdyby tiše přestal chodit, opuštěné košíky by drželly
+ * kapacitu až do konce sezóny a nikdo by si toho nevšiml.
+ *
+ * Proto totéž děláme ještě jednou, mimochodem, při dotazu na dostupnost.
+ * Ten endpoint je cachovaný na deset vteřin, takže i při náporu proběhne
+ * úklid řádově šestkrát za minutu — a zrovna v tu dobu, kdy na něm záleží.
+ * Mimo sezónu se nikdo neptá, ale to nevadí: tam žádné holdy nevznikají.
+ *
+ * `releaseExpiredHolds()` je vůči souběhu odolná a idempotentní, takže víc
+ * současných běhů nevadí. Škrtič je tu jen proto, aby se zbytečně netlouklo
+ * do databáze, když endpoint dostane několik requestů v jedné vteřině.
+ */
+const SWEEP_EVERY_MS = 20_000;
+let lastSweepAt = 0;
+
+export async function sweepExpiredHolds(): Promise<number> {
+  if (!hasDatabaseUrl()) return 0;
+
+  const now = Date.now();
+  if (now - lastSweepAt < SWEEP_EVERY_MS) return 0;
+  lastSweepAt = now;
+
+  try {
+    return await releaseExpiredHolds();
+  } catch (error) {
+    // Úklid je údržba, ne odpověď uživateli. Když selže, dostupnost se
+    // odpoví ze současných čísel a zkusí se to za dvacet vteřin znovu.
+    console.error("Uvolnění propadlých rezervací selhalo:", error);
+    return 0;
+  }
 }
 
 /* ------------------------------------------------------- 4. navázání holdu */

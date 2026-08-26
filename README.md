@@ -157,8 +157,25 @@ Napojení na Vercel se dělá jednou ručně: **Import Project → vybrat repozi
 → vyplnit proměnné z `.env.example`**. Region nastavte na `fra1` (Frankfurt),
 kvůli latenci k databázi.
 
-Cron na uvolňování propadlých rezervací je v `vercel.json` a **vyžaduje**
-proměnnou `CRON_SECRET` — bez ní se v produkci neuvolní nic.
+### Uvolňování propadlých rezervací
+
+Endpoint `/api/cron/uvolnit-rezervace` existuje a vyžaduje `CRON_SECRET`, ale
+**plánovač v `vercel.json` je dočasně vypnutý**: účet je zatím na plánu Hobby,
+kde Vercel dovolí cron jen jednou denně, a minutový by nasazení odmítl.
+
+Nevadí to, protože úklid neběží jen z cronu. `/api/dostupnost` volá při každém
+projití `sweepExpiredHolds()` — endpoint je cachovaný na deset vteřin, takže
+i při náporu se uklidí řádově šestkrát za minutu, a to přesně v době, kdy na
+tom záleží. Mimo sezónu se nikdo neptá, ale tam ani žádné rezervace nevznikají.
+
+Po přechodu na Pro vraťte do `vercel.json`:
+
+```json
+"crons": [{ "path": "/api/cron/uvolnit-rezervace", "schedule": "* * * * *" }]
+```
+
+Úklid „při čtení" nechte být i pak — je to pojistka pro případ, že plánovač
+tiše přestane chodit, a stojí jeden dotaz za dvacet vteřin.
 
 První přihlášení do administrace: nastavte `ADMIN_BOOTSTRAP_EMAIL`
 a `ADMIN_BOOTSTRAP_PASSWORD`, přihlaste se a **hned si heslo změňte**

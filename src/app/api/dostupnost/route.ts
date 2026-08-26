@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { planSeason, SEASON_2026 } from "@/lib/tickets/schedule";
+import { sweepExpiredHolds } from "@/lib/db/booking";
 
 /**
  * Živá dostupnost slotů.
@@ -16,6 +17,11 @@ import { planSeason, SEASON_2026 } from "@/lib/tickets/schedule";
 export const revalidate = 10;
 
 export async function GET() {
+  // Propadlé rezervace uklidíme mimochodem tady, ne jen cronem. Endpoint je
+  // cachovaný na deset vteřin, takže to databázi nic nestojí, a hlavně to
+  // nezávisí na tom, jestli plánovač na daném hostingu vůbec běží.
+  await sweepExpiredHolds();
+
   const days = planSeason(SEASON_2026).map((d) => ({
     date: d.date,
     slots: d.slots.map((s) => ({
