@@ -90,8 +90,12 @@ export function FarmJsonLd({ locale }: { locale: Locale }) {
   return (
     <script
       type="application/ld+json"
-      // Data jsou naše vlastní konstanty, ne uživatelský vstup.
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      // Data jsou dnes naše vlastní konstanty, ale ceník se z administrace
+      // edituje a jednou se sem dostane z databáze. Escapování `<` stojí
+      // jeden řádek a zavírá cestu, kterou by vložený `</script>` otevřel.
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(data).replace(/</g, "\\u003c"),
+      }}
     />
   );
 }
