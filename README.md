@@ -28,7 +28,7 @@ a poptávky jen padají do logu. Hodí se to na práci s designem.
 |---|---|
 | `pnpm dev` | vývojový server |
 | `pnpm build` | produkční build |
-| `pnpm test` | testy (souběžnost rezervací, IBAN a SPAYD) |
+| `pnpm test` | testy (souběžnost rezervací, IBAN a SPAYD, zámek webu) |
 | `pnpm db:generate` | vygeneruje migraci z Drizzle schématu |
 | `pnpm db:push` | nahraje schéma do databáze |
 | `python3 scripts/gen-gourds.py` | přegeneruje siluety tykví |
@@ -108,6 +108,37 @@ Každá změna se zapisuje do `audit_log`.
 
 Vizuálně navazuje na web (papír, inkoust, vlasové linky), ale je to pracovní
 nástroj: hustší sazba, žádné ilustrace, čísla v tabulkových číslicích.
+
+### Web zatím jen pro zvané
+
+Než se web spustí, nemá ho vidět kdokoli, kdo trefí adresu — ale majitel ho
+musí umět ukázat rodině, škole nebo tisku. Stačí na to jedna proměnná:
+
+```bash
+SITE_PASSWORD="nejake-sdilene-heslo"   # zamčeno
+SITE_PASSWORD=""                       # otevřeno všem
+```
+
+- Zámek řeší `src/proxy.ts` (`gateCheck`) nad `src/lib/security/site-gate.ts`.
+  Musí to být v proxy, ne v layoutu: veřejné stránky jsou statické, takže
+  kontrola uvnitř Reactu by přišla až po tom, co je Vercel vydá z cache.
+- Kdo heslo zadá na `/vstup`, dostane cookie s podepsaným tokenem (HS256,
+  platnost měsíc). Heslo v cookie **není**. Podpisový klíč se odvozuje
+  z hesla, takže **změna hesla okamžitě odhlásí všechny**.
+- Zamčený web nevydá `sitemap.xml` a `robots.txt` zakazuje všechno; stránky
+  navíc odcházejí s `X-Robots-Tag: noindex`. Nespuštěný web se nesmí dostat
+  do indexu — z Googlu se pak dostává hůř, než se do něj dostal.
+- Zámek se **netýká** administrace (`/admin` má vlastní přihlášení; dva zámky
+  za sebou majiteli nepomůžou) ani `/api/cron/…`, které chrání `CRON_SECRET`.
+- Vědomá hranice: `/foto` a `_next` jsou mimo matcher proxy, aby fotky mohly
+  ležet v CDN cache. Kdo uhodne přesnou adresu obrázku, dosáhne na něj —
+  na skryté *stránky* ne. Je to zámek proti náhodnému návštěvníkovi
+  a proti indexaci, ne proti útočníkovi.
+- Po spuštění webu proměnnou odeberte. Prázdná = otevřeno, takže se web
+  nemůže zamknout tím, že se na ni zapomene.
+- Zámek sám se čte za běhu, ale `robots.txt` a `sitemap.xml` vznikají při
+  buildu — po zamčení i po odemčení tedy web **nasaďte znovu**, jinak
+  zůstane v `robots.txt` stará odpověď.
 
 ### Bezpečnost
 

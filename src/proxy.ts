@@ -1,9 +1,24 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { LOCALES, DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { isReservedPath } from "@/lib/i18n/routes";
+import {
+  GATE_COOKIE,
+  GATE_PATH,
+  RETURN_PARAM,
+  hasValidGateToken,
+  isGateEnabled,
+  isGateExempt,
+} from "@/lib/security/site-gate";
 
 /**
- * Dvě věci naráz, obě levné.
+ * Tři věci naráz, všechny levné.
+ *
+ * 0. **Zámek nespuštěného webu.** Dokud je nastavené `SITE_PASSWORD`, pustí
+ *    dál jen návštěvníka s cookie od `/vstup`. Musí to být tady, ne
+ *    v layoutu: veřejné stránky jsou statické a vykreslené předem, takže
+ *    kontrola uvnitř Reactu by přišla až po tom, co je Vercel vydá z cache.
+ *    Zámek je proti náhodnému návštěvníkovi a proti indexaci — viz
+ *    `src/lib/security/site-gate.ts`.
  *
  * 1. **Jazyk do cesty.** Čeština běží na kořeni (`/vstupenky`), zatímco
  *    aplikace uvnitř má jednotný tvar `/[locale]/…`. Middleware ten rozdíl
@@ -45,7 +60,7 @@ function adminCsp(nonce: string): string {
   ].join("; ");
 }
 
-export default function proxy(req: NextRequest) {
+export default async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   if (pathname.startsWith("/admin")) {
@@ -64,6 +79,9 @@ export default function proxy(req: NextRequest) {
     return res;
   }
 
+  const locked = await gateCheck(req);
+  if (locked) return locked;
+
   if (isReservedPath(pathname)) return NextResponse.next();
 
   // `/en/…` a `/de/…` už mají tvar, který router čeká.
@@ -74,4 +92,40 @@ export default function proxy(req: NextRequest) {
   const url = req.nextUrl.clone();
   url.pathname = `/${DEFAULT_LOCALE}${pathname === "/" ? "" : pathname}`;
   return NextResponse.rewrite(url);
+}
+
+/**
+ * Odpověď pro zamčený web, nebo `null`, když se má pokračovat dál.
+ *
+ * Stránky končí přesměrováním na `/vstup` (a ne přepisem), aby bylo
+ * návštěvníkovi z adresy jasné, kde je, a aby se mu původní adresa dala
+ * vrátit po odemčení. API vrací 401 — přesměrovaný `fetch` by v prohlížeči
+ * skončil nesrozumitelnou chybou při parsování HTML.
+ */
+async function gateCheck(req: NextRequest): Promise<NextResponse | null> {
+  if (!isGateEnabled()) return null;
+
+  const { pathname, search } = req.nextUrl;
+  if (isGateExempt(pathname)) return null;
+  if (await hasValidGateToken(req.cookies.get(GATE_COOKIE)?.value)) return null;
+
+  if (pathname.startsWith("/api/")) {
+    const res = NextResponse.json(
+      { error: "Web je zatím jen pro zvané." },
+      { status: 401 },
+    );
+    res.headers.set("Cache-Control", "no-store, max-age=0");
+    return res;
+  }
+
+  const url = req.nextUrl.clone();
+  url.pathname = GATE_PATH;
+  url.search = "";
+  if (pathname !== "/") url.searchParams.set(RETURN_PARAM, `${pathname}${search}`);
+
+  const res = NextResponse.redirect(url);
+  // Přesměrování na zámek se nesmí zacachovat — po odemčení by drželo dál.
+  res.headers.set("Cache-Control", "no-store, max-age=0");
+  res.headers.set("X-Robots-Tag", "noindex, nofollow");
+  return res;
 }

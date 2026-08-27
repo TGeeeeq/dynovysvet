@@ -72,7 +72,7 @@ export function alternates(key: RouteKey): Record<Locale, string> {
 }
 
 /** Cesty, které nikdy nepatří jazykovému routeru. */
-const RESERVED_PREFIXES = ["/api", "/admin", "/brana", "/_next", "/foto", "/monitoring"];
+const RESERVED_PREFIXES = ["/api", "/admin", "/brana", "/vstup", "/_next", "/foto", "/monitoring"];
 
 export function isReservedPath(pathname: string): boolean {
   return RESERVED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
