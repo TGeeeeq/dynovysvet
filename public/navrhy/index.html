@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Šest vzhledů Dýňového světa</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wght@400;500;600;700&family=Baloo+2:wght@500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap">
+
+<style>
+/* ==========================================================================
+   OBAL PREZENTACE — tmavá „promítací" plocha. Záměrně jednobarevná a bez
+   ozdob: vzhled obalu nesmí soupeřit s návrhy, které se v něm promítají.
+   ========================================================================== */
+:root{
+  --bg:#121311; --bg-2:#191a17; --line:#2c2e29; --line-soft:#232520;
+  --tx:#ece9e1; --tx-mid:#a8a29a; --tx-dim:#79746c; --amber:#dfb15c;
+  --f-ui:"Instrument Sans",ui-sans-serif,system-ui,sans-serif;
+  --f-tt:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-mo:"JetBrains Mono",ui-monospace,SFMono-Regular,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--f-ui);
+  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1280px;margin:0 auto;padding:0 clamp(16px,4vw,48px)}
+.lbl{font-family:var(--f-mo);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--tx-dim)}
+
+/* --- Hlava dokumentu --- */
+.doc-head{padding:clamp(48px,9vw,110px) 0 clamp(32px,5vw,56px)}
+.doc-head h1{font-family:var(--f-tt);font-weight:700;letter-spacing:-.02em;
+  font-size:clamp(2.1rem,5.6vw,3.9rem);line-height:1.02;margin:18px 0 0;text-wrap:balance}
+.doc-head h1 em{font-style:normal;color:var(--amber)}
+.doc-lead{max-width:60ch;margin:22px 0 0;color:var(--tx-mid);font-size:clamp(1rem,1.6vw,1.16rem)}
+.facts{display:grid;gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);
+  margin-top:clamp(28px,4vw,44px);grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.facts div{background:var(--bg-2);padding:16px 18px}
+.facts b{display:block;font-family:var(--f-mo);font-size:.9rem;font-weight:500;margin-top:6px;color:var(--tx)}
+.facts p{margin:4px 0 0;font-size:.86rem;color:var(--tx-dim);line-height:1.45}
+
+/* --- Jeden návrh --- */
+.prop{padding:clamp(40px,6vw,84px) 0;border-top:1px solid var(--line)}
+.prop-head{display:grid;gap:clamp(18px,3vw,44px);grid-template-columns:1fr;align-items:start}
+@media(min-width:900px){.prop-head{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr)}}
+.prop-num{font-family:var(--f-mo);font-size:.78rem;color:var(--amber);letter-spacing:.14em}
+.prop-head h2{font-family:var(--f-tt);font-weight:700;font-size:clamp(1.6rem,3.4vw,2.5rem);
+  letter-spacing:-.02em;line-height:1.06;margin:10px 0 0}
+.prop-head h2 span{color:var(--tx-dim);font-weight:500}
+.prop-head p{margin:14px 0 0;color:var(--tx-mid);max-width:56ch}
+.meta{display:grid;gap:1px;background:var(--line-soft);border:1px solid var(--line-soft)}
+.meta div{background:var(--bg-2);padding:11px 14px;display:grid;grid-template-columns:5.6rem 1fr;gap:12px;align-items:baseline}
+.meta dt{font-family:var(--f-mo);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--tx-dim)}
+.meta dd{margin:0;font-size:.9rem;line-height:1.45}
+.sw{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.sw i{width:18px;height:18px;border-radius:50%;display:block;box-shadow:inset 0 0 0 1px rgb(255 255 255/.14)}
+
+/* --- Rám náhledu --- */
+.frame{margin-top:clamp(22px,3.4vw,38px);border:1px solid var(--line);border-radius:10px;
+  overflow:hidden;background:var(--bg-2);box-shadow:0 26px 60px -30px #000}
+.chrome{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#232520;border-bottom:1px solid var(--line)}
+.chrome i{width:9px;height:9px;border-radius:50%;background:#43463f;display:block}
+.chrome span{font-family:var(--f-mo);font-size:.7rem;color:var(--tx-dim);margin-left:8px}
+.mk{overflow:hidden}
+.mk *{box-sizing:border-box}
+.mk img{display:block;max-width:100%}
+.mk a{text-decoration:none}
+.mk h1,.mk h2,.mk h3,.mk p,.mk ul{margin:0}
+.mk ul{list-style:none;padding:0}
+.note{margin-top:14px;font-size:.86rem;color:var(--tx-dim);font-family:var(--f-mo);line-height:1.5}
+
+/* Společná mřížka horní lišty u návrhů */
+.mk .bar{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.mk .bar nav{display:none;gap:22px}
+@media(min-width:760px){.mk .bar nav{display:flex}}
+
+/* --- Konec --- */
+.end{padding:clamp(44px,7vw,96px) 0 clamp(60px,10vw,120px);border-top:1px solid var(--line)}
+.end h2{font-family:var(--f-tt);font-size:clamp(1.5rem,3vw,2.1rem);letter-spacing:-.02em;margin:14px 0 0}
+.end ol{margin:22px 0 0;padding:0;list-style:none;display:grid;gap:14px;max-width:62ch;counter-reset:s}
+.end li{counter-increment:s;padding-left:34px;position:relative;color:var(--tx-mid)}
+.end li::before{content:counter(s);position:absolute;left:0;top:1px;font-family:var(--f-mo);font-size:.78rem;color:var(--amber)}
+.end li b{color:var(--tx);font-weight:600}
+@media(prefers-reduced-motion:no-preference){
+  .frame{transition:box-shadow .4s cubic-bezier(.22,1,.36,1)}
+  .frame:hover{box-shadow:0 30px 70px -28px #000}
+}
+
+/* ==========================================================================
+   01 · RYTÝ HERBÁŘ — inkoust na papíře, oranžová jen jako linka a světlo
+   ========================================================================== */
+.s1{--pa:#f4ebdc;--pad:#e8dac4;--ink:#1c1814;--ink2:#4a4038;--ink3:#7d7166;--pu:#c25a22;
+  background:var(--pa);color:var(--ink);font-family:"Instrument Sans",sans-serif;position:relative}
+.s1::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.09;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='4'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E")}
+.s1 .bar{padding:18px clamp(18px,4vw,44px);border-bottom:1px solid rgb(28 24 20/.14)}
+.s1 .logo{font-family:"Fraunces",Georgia,serif;font-weight:600;font-size:1.16rem;letter-spacing:-.01em}
+.s1 .bar nav a{font-size:.86rem;color:var(--ink2)}
+.s1 .cta{background:var(--ink);color:var(--pa);border-radius:999px;padding:8px 18px;font-size:.84rem}
+.s1 .hero{display:grid;gap:26px;padding:clamp(26px,4vw,52px) clamp(18px,4vw,44px) clamp(28px,4vw,48px);align-items:center}
+@media(min-width:820px){.s1 .hero{grid-template-columns:1.08fr .92fr}}
+.s1 .kick{font-family:var(--f-mo);font-size:.66rem;letter-spacing:.32em;text-transform:uppercase;color:var(--pu)}
+.s1 h1{font-family:"Fraunces",Georgia,serif;font-variation-settings:"SOFT" 40,"WONK" 1;font-weight:600;
+  font-size:clamp(3rem,7.4vw,5.4rem);line-height:.92;letter-spacing:-.02em;margin-top:14px;
+  text-shadow:0 1px 0 rgb(255 255 255/.35),0 -1px 1px rgb(143 58 22/.13)}
+.s1 h1 b{display:block;color:var(--pu);font-weight:600;padding-left:.07em}
+.s1 .lead{margin-top:18px;max-width:34ch;font-size:1.02rem;line-height:1.62;color:var(--ink2)}
+.s1 .acts{display:flex;gap:18px;align-items:center;margin-top:22px;flex-wrap:wrap}
+.s1 .acts .p{background:var(--ink);color:var(--pa);border-radius:999px;padding:11px 24px;font-size:.92rem}
+.s1 .acts .s{border-bottom:2px solid rgb(28 24 20/.25);padding-bottom:3px;font-size:.92rem}
+.s1 figure{margin:0;position:relative;justify-self:end;max-width:400px;width:100%}
+.s1 figcaption{position:absolute;left:6px;bottom:-6px;border-left:2px solid var(--pu);padding-left:10px;background:var(--pa)}
+.s1 figcaption b{font-family:"Fraunces",serif;font-size:1rem;display:block}
+.s1 figcaption i{font-family:var(--f-mo);font-size:.66rem;font-style:normal;color:var(--ink3);display:block}
+.s1 figcaption span{font-size:.8rem;color:var(--ink2)}
+.s1 .stats{background:var(--pad);display:grid;gap:0;padding:6px clamp(18px,4vw,44px) 20px}
+@media(min-width:700px){.s1 .stats{grid-template-columns:repeat(3,1fr);column-gap:34px}}
+.s1 .stats>div{padding:16px 0}
+.s1 .stats dt{font-size:.64rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink3)}
+.s1 .stats dd{margin:6px 0 0;font-family:var(--f-mo);font-size:1.15rem}
+.s1 .stats p{font-size:.82rem;color:var(--ink2);margin-top:3px}
+.s1 .torn{display:block;width:100%;height:22px}
+
+/* ==========================================================================
+   02 · FOTOŽURNÁL — fotka nese vše, typografie ustupuje
+   ========================================================================== */
+.s2{background:#0c0c0b;color:#f6f4f1;font-family:"Archivo",sans-serif}
+.s2 .bar{padding:16px clamp(18px,4vw,40px);border-bottom:1px solid rgb(255 255 255/.14)}
+.s2 .logo{font-family:"Archivo",sans-serif;font-weight:600;font-size:.8rem;letter-spacing:.3em;text-transform:uppercase}
+.s2 .bar nav a{font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:rgb(246 244 241/.72)}
+.s2 .cta{font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;border:1px solid rgb(255 255 255/.45);padding:8px 16px}
+.s2 .hero{position:relative;min-height:clamp(320px,44vw,470px);display:flex;align-items:flex-end;
+  background-size:cover;background-position:center 74%}
+.s2 .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgb(8 8 7/.86) 4%,rgb(8 8 7/.25) 52%,rgb(8 8 7/.4))}
+.s2 .hero>div{position:relative;padding:clamp(24px,4vw,52px);width:100%}
+.s2 .kick{font-size:.7rem;letter-spacing:.34em;text-transform:uppercase;color:rgb(246 244 241/.8)}
+.s2 h1{font-family:"Playfair Display",Georgia,serif;font-weight:400;font-size:clamp(2.6rem,7vw,5rem);
+  line-height:.98;margin-top:12px;letter-spacing:-.01em}
+.s2 h1 i{font-style:italic}
+.s2 .hero p{margin-top:16px;max-width:46ch;font-size:.98rem;line-height:1.6;color:rgb(246 244 241/.82)}
+.s2 .strip{display:grid;gap:1px;background:rgb(255 255 255/.12);padding:0}
+@media(min-width:760px){.s2 .strip{grid-template-columns:1.4fr 1fr 1fr}}
+.s2 .strip figure{margin:0;background:#0c0c0b;padding:0 0 16px}
+.s2 .strip img{width:100%;height:clamp(140px,17vw,200px);object-fit:cover;filter:saturate(.9) contrast(1.04)}
+.s2 .strip figcaption{padding:12px 16px 0;font-size:.78rem;line-height:1.5;color:rgb(246 244 241/.66)}
+.s2 .strip figcaption b{display:block;font-size:.66rem;letter-spacing:.22em;text-transform:uppercase;color:#f6f4f1;margin-bottom:5px;font-weight:600}
+
+/* ==========================================================================
+   03 · LAMPIONOVÁ NOC — statek po zavírací hodině, světlo jako jediná barva
+   ========================================================================== */
+.s3{--ni:#0f130f;--ni2:#182018;--la:#ffb347;--tx:#e7e2d4;
+  background:radial-gradient(120% 90% at 78% 8%,rgb(255 179 71/.16),transparent 58%),var(--ni);
+  color:var(--tx);font-family:"Instrument Sans",sans-serif}
+.s3 .bar{padding:18px clamp(18px,4vw,44px);border-bottom:1px solid rgb(255 179 71/.16)}
+.s3 .logo{font-family:"Fraunces",serif;font-weight:600;font-size:1.14rem;color:#fff}
+.s3 .bar nav a{font-size:.86rem;color:rgb(231 226 212/.7)}
+.s3 .cta{border:1px solid var(--la);color:var(--la);border-radius:999px;padding:8px 18px;font-size:.84rem;
+  box-shadow:0 0 22px -6px rgb(255 179 71/.55)}
+.s3 .hero{display:grid;gap:clamp(22px,3vw,44px);align-items:center;padding:clamp(30px,5vw,62px) clamp(18px,4vw,44px)}
+@media(min-width:820px){.s3 .hero{grid-template-columns:1.05fr .95fr}}
+.s3 .kick{font-family:var(--f-mo);font-size:.64rem;letter-spacing:.2em;white-space:nowrap;text-transform:uppercase;color:var(--la)}
+.s3 h1{font-family:"Fraunces",serif;font-variation-settings:"SOFT" 60,"WONK" 1;font-weight:600;
+  font-size:clamp(2.5rem,6.2vw,4.4rem);line-height:1;margin-top:14px;color:#fdf6e7;
+  text-shadow:0 0 34px rgb(255 179 71/.28)}
+.s3 h1 b{display:block;font-weight:600;color:var(--la)}
+.s3 .hero p{margin-top:18px;max-width:38ch;color:rgb(231 226 212/.76);line-height:1.65;font-size:1rem}
+.s3 .acts{display:flex;gap:16px;align-items:center;margin-top:24px;flex-wrap:wrap}
+.s3 .acts .p{background:var(--la);color:#20180a;border-radius:999px;padding:11px 24px;font-size:.92rem;font-weight:500;
+  box-shadow:0 0 40px -12px rgb(255 179 71/.9)}
+.s3 .acts .s{font-size:.92rem;color:rgb(231 226 212/.8);border-bottom:1px solid rgb(255 179 71/.4);padding-bottom:3px}
+.s3 .arch{position:relative;justify-self:center;width:100%;max-width:330px;aspect-ratio:3/4;
+  border-radius:170px 170px 12px 12px;overflow:hidden;border:1px solid rgb(255 179 71/.3);
+  box-shadow:0 0 90px -30px rgb(255 179 71/.5)}
+.s3 .arch img{width:100%;height:100%;object-fit:cover;filter:brightness(.78) saturate(.92)}
+.s3 .arch::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgb(15 19 15/.75),transparent 55%)}
+.s3 .band{border-top:1px solid rgb(255 179 71/.16);background:rgb(24 32 24/.7);display:grid;gap:1px}
+@media(min-width:700px){.s3 .band{grid-template-columns:repeat(3,1fr)}}
+.s3 .band>div{padding:18px clamp(18px,3vw,30px)}
+.s3 .band dt{font-family:var(--f-mo);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;color:rgb(255 179 71/.8)}
+.s3 .band dd{margin:7px 0 0;font-family:"Fraunces",serif;font-size:1.2rem;color:#fdf6e7}
+.s3 .band p{margin-top:3px;font-size:.82rem;color:rgb(231 226 212/.6)}
+
+/* ==========================================================================
+   04 · JARMAREČNÍ PLAKÁT — vývěska na plakátovací ploše, tisk na dvě barvy
+   ========================================================================== */
+.s4{--cr:#f0e4cb;--ink:#221c15;--red:#b0281c;background:var(--cr);color:var(--ink);
+  font-family:"Archivo",sans-serif;position:relative}
+.s4 .bar{padding:12px clamp(18px,4vw,40px);background:var(--ink);color:var(--cr)}
+.s4 .logo{font-family:"Alfa Slab One",Georgia,serif;font-size:.98rem;letter-spacing:.02em}
+.s4 .bar nav a{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:rgb(240 228 203/.82)}
+.s4 .cta{background:var(--red);color:#fff;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;padding:7px 15px}
+.s4 .poster{padding:clamp(24px,4vw,46px) clamp(18px,4vw,40px) clamp(28px,4vw,44px);text-align:center;
+  border-bottom:6px double rgb(34 28 21/.5)}
+.s4 .top{font-size:.68rem;letter-spacing:.26em;text-transform:uppercase;color:var(--red)}
+.s4 .rule{display:flex;align-items:center;gap:12px;justify-content:center;margin:14px 0}
+.s4 .rule::before,.s4 .rule::after{content:"";height:1px;background:rgb(34 28 21/.45);flex:1;max-width:150px}
+.s4 .rule span{font-family:var(--f-mo);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase}
+.s4 h1{font-family:"Alfa Slab One",Georgia,serif;font-size:clamp(2.2rem,8vw,5rem);line-height:.98;margin-top:26px;
+  letter-spacing:-.015em;text-transform:uppercase}
+.s4 h1 b{display:block;font-weight:400;color:var(--red);-webkit-text-stroke:0}
+.s4 .dates{font-family:"Archivo",sans-serif;font-weight:700;font-size:clamp(.95rem,2.4vw,1.35rem);
+  letter-spacing:.06em;text-transform:uppercase;margin-top:16px}
+.s4 .poster .txt{margin:12px auto 0;max-width:48ch;font-size:.95rem;line-height:1.58;color:rgb(34 28 21/.82)}
+.s4 .stub{display:inline-flex;align-items:center;gap:14px;margin-top:22px;background:var(--ink);color:var(--cr);
+  padding:12px 26px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:.8rem;
+  clip-path:polygon(0 0,100% 0,100% 100%,0 100%,10px 50%)}
+.s4 .stub i{font-family:var(--f-mo);font-style:normal;color:#e8b34e;letter-spacing:0}
+.s4 .halftone{display:grid;gap:1px;background:rgb(34 28 21/.25);border-bottom:1px solid rgb(34 28 21/.25)}
+@media(min-width:640px){.s4 .halftone{grid-template-columns:repeat(3,1fr)}}
+.s4 .halftone figure{margin:0;background:var(--cr);position:relative}
+.s4 .halftone img{width:100%;height:clamp(120px,15vw,170px);object-fit:cover;
+  filter:grayscale(1) contrast(1.3) sepia(.42) brightness(1.02);mix-blend-mode:multiply}
+.s4 .halftone figcaption{position:absolute;bottom:8px;left:10px;background:var(--ink);color:var(--cr);
+  font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;padding:4px 9px}
+.s4 .stamp{position:absolute;top:64px;right:clamp(10px,3vw,34px);rotate:-9deg;border:2px solid var(--red);
+  color:var(--red);width:96px;height:96px;border-radius:50%;display:grid;place-content:center;text-align:center;
+  font-family:var(--f-mo);font-size:.6rem;letter-spacing:.1em;line-height:1.5;text-transform:uppercase;
+  background:rgb(240 228 203/.7)}
+
+/* ==========================================================================
+   05 · SLÁMOHRAD — web pro rodiny, plné barvy a kulaté hrany
+   ========================================================================== */
+.s5{--or:#f2681f;--gr:#2f8b57;--sk:#fff1cf;--in:#241f1a;--cm:#fffaf0;
+  background:var(--sk);color:var(--in);font-family:"Instrument Sans",sans-serif}
+.s5 .bar{padding:14px clamp(16px,3vw,34px);background:var(--cm)}
+.s5 .logo{font-family:"Baloo 2",cursive;font-weight:800;font-size:1.28rem;color:var(--or);line-height:1}
+.s5 .bar nav a{font-size:.88rem;font-weight:500}
+.s5 .cta{background:var(--gr);color:#fff;border-radius:999px;padding:10px 20px;font-size:.86rem;font-weight:600;
+  box-shadow:0 4px 0 #1f6b41}
+.s5 .hero{position:relative;overflow:hidden;padding:clamp(24px,4vw,48px) clamp(16px,3vw,36px) clamp(30px,4vw,54px);
+  display:grid;gap:26px;align-items:center}
+@media(min-width:820px){.s5 .hero{grid-template-columns:1fr .9fr}}
+.s5 .blob{position:absolute;border-radius:50%;filter:blur(2px);opacity:.5}
+.s5 .b1{width:230px;height:230px;background:#ffd280;top:-120px;right:14%}
+.s5 .b2{width:170px;height:170px;background:#bfe3c6;bottom:-90px;left:-50px}
+.s5 .hero>div{position:relative;z-index:1}
+.s5 .pill{display:inline-block;background:var(--or);color:#fff;border-radius:999px;padding:6px 16px;
+  font-size:.78rem;font-weight:600;rotate:-2deg}
+.s5 h1{font-family:"Baloo 2",cursive;font-weight:800;font-size:clamp(2.3rem,6.6vw,4.2rem);line-height:1.02;margin-top:16px}
+.s5 h1 b{color:var(--or);font-weight:800}
+.s5 .hero p{margin-top:14px;max-width:36ch;font-size:1rem;line-height:1.6;color:rgb(36 31 26/.8)}
+.s5 .acts{display:flex;gap:14px;margin-top:24px;flex-wrap:wrap;align-items:center}
+.s5 .acts .p{background:var(--or);color:#fff;border-radius:999px;padding:13px 28px;font-weight:700;font-size:.95rem;
+  box-shadow:0 5px 0 #c94f11}
+.s5 .acts .s{font-weight:600;font-size:.95rem;color:var(--gr);border-bottom:2px dashed var(--gr);padding-bottom:2px}
+.s5 .photo{border-radius:26px;overflow:hidden;rotate:2deg;border:6px solid var(--cm);
+  box-shadow:0 16px 34px -18px rgb(36 31 26/.5);justify-self:center;max-width:340px}
+.s5 .photo img{width:100%;height:clamp(190px,24vw,250px);object-fit:cover}
+.s5 .cards{background:var(--cm);padding:clamp(20px,3vw,34px) clamp(16px,3vw,36px);display:grid;gap:14px}
+@media(min-width:700px){.s5 .cards{grid-template-columns:repeat(3,1fr)}}
+.s5 .cards>div{background:var(--sk);border-radius:20px;padding:18px 20px}
+.s5 .cards h3{font-family:"Baloo 2",cursive;font-weight:700;font-size:1.1rem;margin-top:10px}
+.s5 .cards p{font-size:.86rem;color:rgb(36 31 26/.72);line-height:1.5;margin-top:4px}
+.s5 .ic{width:38px;height:38px;border-radius:12px;display:grid;place-content:center}
+
+/* ==========================================================================
+   06 · MŘÍŽKA — švýcarská typografie, bílá plocha, jediný akcent
+   ========================================================================== */
+.s6{--or:#e2521e;background:#fff;color:#111;font-family:"Archivo",sans-serif}
+.s6 .bar{padding:14px clamp(16px,3vw,34px);border-bottom:1px solid #111}
+.s6 .logo{font-weight:600;font-size:.94rem;letter-spacing:-.01em}
+.s6 .logo i{font-style:normal;color:var(--or)}
+.s6 .bar nav a{font-size:.8rem;color:#4a4a4a}
+.s6 .cta{background:var(--or);color:#fff;padding:8px 16px;font-size:.8rem;font-weight:500}
+.s6 .grid{display:grid;grid-template-columns:repeat(12,1fr);border-bottom:1px solid #111}
+.s6 .hero{grid-column:1/-1;padding:clamp(28px,5vw,64px) clamp(16px,3vw,34px) clamp(24px,4vw,44px);
+  display:grid;gap:clamp(20px,3vw,40px)}
+@media(min-width:860px){.s6 .hero{grid-template-columns:7fr 5fr;align-items:end}}
+.s6 .lbl6{font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:#8a8a8a}
+.s6 h1{font-weight:600;font-size:clamp(2.4rem,6.6vw,4.6rem);line-height:.98;letter-spacing:-.035em;margin-top:12px}
+.s6 h1 b{font-weight:600;color:var(--or)}
+.s6 .hero p{margin-top:0;font-size:.98rem;line-height:1.62;color:#3d3d3d;max-width:40ch}
+.s6 .hero p+p{margin-top:14px}
+.s6 .acts{display:flex;gap:20px;margin-top:22px;align-items:center;flex-wrap:wrap}
+.s6 .acts .p{background:#111;color:#fff;padding:12px 24px;font-size:.9rem;font-weight:500}
+.s6 .acts .s{font-size:.9rem;border-bottom:1px solid var(--or);padding-bottom:2px}
+.s6 .cols{grid-column:1/-1;display:grid;border-top:0}
+@media(min-width:760px){.s6 .cols{grid-template-columns:5fr 7fr}}
+.s6 .cols figure{margin:0}
+.s6 .cols img{width:100%;height:100%;min-height:200px;object-fit:cover}
+.s6 .tbl{border-left:1px solid #111;padding:clamp(18px,3vw,30px) clamp(16px,3vw,34px)}
+.s6 table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.s6 caption{text-align:left;font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:#8a8a8a;padding-bottom:12px}
+.s6 th,.s6 td{text-align:left;padding:9px 0;border-top:1px solid #e2e2e2;font-size:.9rem;font-weight:400}
+.s6 th{width:52%;font-weight:500;color:#111}
+.s6 td:last-child{text-align:right;color:#3d3d3d}
+.s6 tr:last-child td{color:var(--or)}
+</style>
+</head>
+<body>
+
+<div class="wrap doc-head">
+  <p class="lbl">Statek u Pipků · Nová Ves u Leštiny · návrh vzhledu webu</p>
+  <h1>Šest vzhledů pro <em>Dýňový svět</em>.<br>Vyberte jeden a ten dotáhneme.</h1>
+  <p class="doc-lead">Pod každým názvem je živý náhled — přesně tak by web vypadal na počítači.
+    Obsah a funkce jsou u všech šesti stejné; mění se jen barvy, písmo a způsob, jakým se
+    stránka skládá. Návrhy si můžete prohlédnout i na mobilu, náhledy se přizpůsobí.</p>
+
+  <div class="facts">
+    <div><span class="lbl">Stejné u všech</span><b>Prodej vstupenek</b><p>Časované vstupy s živou kapacitou, platba kartou, vstupenka e-mailem.</p></div>
+    <div><span class="lbl">Stejné u všech</span><b>Tři jazyky</b><p>Čeština, angličtina, němčina — včetně adres stránek.</p></div>
+    <div><span class="lbl">Stejné u všech</span><b>Poptávky a správa</b><p>Formuláře pro školy a pronájem, administrace ceníku a sezóny.</p></div>
+    <div><span class="lbl">Co vybíráte</span><b>Vzhled a atmosféra</b><p>Barvy, písmo, práce s fotkami, tón celého webu.</p></div>
+  </div>
+</div>
+
+<!-- ═══════════════ 01 ═══════════════════════════════════════════════════ -->
+<section class="prop wrap">
+  <div class="prop-head">
+    <div>
+      <p class="prop-num">Návrh 01 / 06</p>
+      <h2>Rytý herbář <span>— současná verze</span></h2>
+      <p>To, co už stojí. Papír, inkoust, kreslené tabule odrůd jako ve starém botanickém
+        atlasu. Oranžová nikdy nezaplní velkou plochu — je to jen linka, číslo a světlo.
+        Působí to jako věc s historií, ne jako sezónní kampaň.</p>
+    </div>
+    <dl class="meta">
+      <div><dt>Písmo</dt><dd>Fraunces (nadpisy) + Instrument Sans</dd></div>
+      <div><dt>Barvy</dt><dd class="sw"><i style="background:#f4ebdc"></i><i style="background:#e8dac4"></i><i style="background:#1c1814"></i><i style="background:#c25a22"></i><i style="background:#4e5f35"></i></dd></div>
+      <div><dt>Sedne</dt><dd>Rodinnému statku, který chce vypadat starobyle a zároveň draze</dd></div>
+      <div><dt>Pozor</dt><dd>Ilustrace odrůd je ruční práce — přidání nové odrůdy není za pět minut</dd></div>
+    </dl>
+  </div>
+
+  <div class="frame">
+    <div class="chrome"><i></i><i></i><i></i><span>dynovysvet.cz</span></div>
+    <div class="mk s1">
+      <header class="bar">
+        <span class="logo">Dýňový svět</span>
+        <nav><a href="#">Dýňový svět</a><a href="#">Vstupenky</a><a href="#">Školy</a><a href="#">Kontakt</a></nav>
+        <a class="cta" href="#">Vstupenky</a>
+      </header>
+      <div class="hero">
+        <div>
+          <p class="kick">Nová Ves u Leštiny · Vysočina</p>
+          <h1>Dýňový<b>svět</b></h1>
+          <p class="lead">Pěstujeme dýně. Na podzim otevřeme dvůr, stodolu i zahradu a ukážeme
+            vám, kolik jich vlastně existuje. Děti mezitím obsadí slámohrad.</p>
+          <div class="acts"><a class="p" href="#">Koupit vstupenky</a><a class="s" href="#">Co u nás uvidíte</a></div>
+        </div>
+        <figure>
+          <svg viewBox="0 0 300 300" width="100%" role="img" aria-label="Rytina dýně Hokaido">
+            <g fill="none" stroke="#1c1814" stroke-width="2.4" stroke-linecap="round">
+              <path d="M150 76c-2-14 1-26 8-33 6-6 14-7 17-3 3 5-1 9-7 12-9 4-14 12-13 24"/>
+              <path d="M150 78c-44 0-78 30-78 68 0 42 34 74 78 74s78-32 78-74c0-38-34-68-78-68z"/>
+              <path d="M150 78c-16 6-26 34-26 68s10 62 26 74M150 78c16 6 26 34 26 68s-10 62-26 74" stroke-width="1.5"/>
+              <path d="M124 84c-9 12-16 36-16 62 0 28 7 52 16 66M176 84c9 12 16 36 16 62 0 28-7 52-16 66" stroke-width="1.2" opacity=".7"/>
+              <path d="M96 106c-8 14-13 33-13 46M204 106c8 14 13 33 13 46" stroke-width="1.1" opacity=".5"/>
+            </g>
+            <g stroke="#1c1814" stroke-width="1" opacity=".34" stroke-linecap="round">
+              <path d="M84 168c8 6 18 10 28 12M82 182c9 7 20 12 31 14M86 196c8 7 17 12 26 15M96 210c7 6 14 10 21 13"/>
+              <path d="M216 168c-8 6-18 10-28 12M218 182c-9 7-20 12-31 14M214 196c-8 7-17 12-26 15"/>
+            </g>
+          </svg>
+          <figcaption><b>Hokaido</b><i>Cucurbita maxima</i><span>Sladká, na polévku i pečení.</span></figcaption>
+        </figure>
+      </div>
+      <svg class="torn" viewBox="0 0 1200 22" preserveAspectRatio="none" aria-hidden="true"><path d="M0 7c50 8 100-7 150 1s100 11 150 2 100-10 150-1 100 10 150 3 100-9 150-2 100 7 150 1 100-8 150-2 100 6 150 3v9H0z" fill="#e8dac4"/></svg>
+      <dl class="stats">
+        <div><dt>Sezóna</dt><dd>20. 9. — 2. 11.</dd><p>Ročník 2026</p></div>
+        <div><dt>Otevřeno</dt><dd>st–pá 14—18</dd><p>so–ne a svátky 10—18</p></div>
+        <div><dt>Vstupné</dt><dd>120 / 100 Kč</dd><p>děti do 2 let zdarma · pes 10 Kč</p></div>
+      </dl>
+    </div>
+  </div>
+  <p class="note">Náhled ukazuje hlavičku, úvodní obrazovku a pás se sezónními údaji.</p>
+</section>
+
+<!-- ═══════════════ 02 ═══════════════════════════════════════════════════ -->
+<section class="prop wrap">
+  <div class="prop-head">
+    <div>
+      <p class="prop-num">Návrh 02 / 06</p>
+      <h2>Fotožurnál <span>— fotka na celou obrazovku</span></h2>
+      <p>Web ustoupí fotkám. Přes celou první obrazovku jde jeden snímek, jméno akce je
+        v něm položené jako titulek v časopise. Ostrý černobílý základ, barvu dodá jen to,
+        co je na fotce. Stojí a padá to na kvalitě fotografií.</p>
+    </div>
+    <dl class="meta">
+      <div><dt>Písmo</dt><dd>Playfair Display + Archivo (verzálky, prostrkané)</dd></div>
+      <div><dt>Barvy</dt><dd class="sw"><i style="background:#0c0c0b"></i><i style="background:#f6f4f1"></i><i style="background:#3d3d3a"></i><i style="background:#c25a22"></i></dd></div>
+      <div><dt>Sedne</dt><dd>Když chcete působit dospěle a zdrženlivě, spíš zážitek než atrakce</dd></div>
+      <div><dt>Pozor</dt><dd>Potřebuje fotografa — 15—20 opravdu dobrých snímků</dd></div>
+    </dl>
+  </div>
+
+  <div class="frame">
+    <div class="chrome"><i></i><i></i><i></i><span>dynovysvet.cz</span></div>
+    <div class="mk s2">
+      <header class="bar">
+        <span class="logo">Dýňový svět</span>
+        <nav><a href="#">Statek</a><a href="#">Odrůdy</a><a href="#">Vstupenky</a><a href="#">Kontakt</a></nav>
+        <a class="cta" href="#">Vstupenky</a>
+      </header>
+      <div class="hero" style="background-image:url(/foto/img_20220930_135328_resized_20220930_020047533-1000.webp)">
+        <div>
+          <p class="kick">20. září — 2. listopadu 2026</p>
+          <h1>Dýňový svět<br><i>na statku u Pipků</i></h1>
+          <p>Dvůr, stodola a zahrada na Vysočině. Dva měsíce v roce otevřené,
+            zbytek roku se tu pěstuje.</p>
+        </div>
+      </div>
+      <div class="strip">
+        <figure><img src="/foto/dsc_0683-1000.webp" alt="Hromada dýní u cihlové zdi statku"><figcaption><b>Dvůr</b>Dýně se skládají tam, kde vyrostly — u zdi, ne do stánku.</figcaption></figure>
+        <figure><img src="/foto/dsc_0835-2-1000.webp" alt="Regál ve stodole s popsanými odrůdami dýní"><figcaption><b>Stodola</b>U každé odrůdy je napsáno, na co se hodí.</figcaption></figure>
+        <figure><img src="/foto/dsc_0285-1000.webp" alt="Zlatý retrívr sedí v poli dýní"><figcaption><b>Pole</b>Těsně před sklizní.</figcaption></figure>
+      </div>
+    </div>
+  </div>
+  <p class="note">Náhled ukazuje úvodní fotku a pás tří vstupů do dalších stránek.</p>
+</section>
+
+<!-- ═══════════════ 03 ═══════════════════════════════════════════════════ -->
+<section class="prop wrap">
+  <div class="prop-head">
+    <div>
+      <p class="prop-num">Návrh 03 / 06</p>
+      <h2>Lampionová noc <span>— tmavý web</span></h2>
+      <p>Statek po zavírací hodině. Tmavé pozadí, jediná barva je světlo lucerny.
+        Nejvíc atmosféry ze všech šesti a nejvíc si to pamatujete — ale je to podzimní
+        podvečer, ne slunečné dopoledne s dětmi.</p>
+    </div>
+    <dl class="meta">
+      <div><dt>Písmo</dt><dd>Fraunces + Instrument Sans</dd></div>
+      <div><dt>Barvy</dt><dd class="sw"><i style="background:#0f130f"></i><i style="background:#182018"></i><i style="background:#ffb347"></i><i style="background:#e7e2d4"></i></dd></div>
+      <div><dt>Sedne</dt><dd>Když chcete vytáhnout dýňové lampiony a večerní program</dd></div>
+      <div><dt>Pozor</dt><dd>Tmavý web se hůř tiskne a fotky musí být upravené na tmu</dd></div>
+    </dl>
+  </div>
+
+  <div class="frame">
+    <div class="chrome"><i></i><i></i><i></i><span>dynovysvet.cz</span></div>
+    <div class="mk s3">
+      <header class="bar">
+        <span class="logo">Dýňový svět</span>
+        <nav><a href="#">Co u nás uvidíte</a><a href="#">Odrůdy</a><a href="#">Školy</a><a href="#">Kontakt</a></nav>
+        <a class="cta" href="#">Vstupenky</a>
+      </header>
+      <div class="hero">
+        <div>
+          <p class="kick">Sezóna 2026 · 20. 9. — 2. 11.</p>
+          <h1>Když se rozsvítí<b>dýňový svět</b></h1>
+          <p>Přes den obyčejný statek. K večeru se ve stodole rozsvítí vyřezané dýně
+            a zahrada se změní na něco úplně jiného.</p>
+          <div class="acts"><a class="p" href="#">Koupit vstupenky</a><a class="s" href="#">Program večerů</a></div>
+        </div>
+        <div class="arch"><img src="/foto/dsc_0301-1000.webp" alt="Podzimní výzdoba z dýní a šípkových větví na stole"></div>
+      </div>
+      <dl class="band">
+        <div><dt>Otevřeno</dt><dd>st–pá 14—18</dd><p>so–ne a svátky 10—18</p></div>
+        <div><dt>Vstupné</dt><dd>120 / 100 Kč</dd><p>děti do 2 let zdarma</p></div>
+        <div><dt>Kde</dt><dd>Nová Ves u Leštiny 5</dd><p>parkování 200 m od vrat</p></div>
+      </dl>
+    </div>
+  </div>
+  <p class="note">Náhled ukazuje hlavičku, úvodní obrazovku a pás praktických údajů.</p>
+</section>
+
+<!-- ═══════════════ 04 ═══════════════════════════════════════════════════ -->
+<section class="prop wrap">
+  <div class="prop-head">
+    <div>
+      <p class="prop-num">Návrh 04 / 06</p>
+      <h2>Jarmareční plakát <span>— tisk na dvě barvy</span></h2>
+      <p>Web jako vývěska na plakátovací ploše. Tučné plakátové písmo, dvojité linky,
+        datum jako to hlavní. Fotky jdou do jedné barvy, takže funguje i s tím, co máte
+        nafoceno teď. Nejsilnější v oznamování termínů.</p>
+    </div>
+    <dl class="meta">
+      <div><dt>Písmo</dt><dd>Alfa Slab One + Archivo</dd></div>
+      <div><dt>Barvy</dt><dd class="sw"><i style="background:#f0e4cb"></i><i style="background:#221c15"></i><i style="background:#b0281c"></i><i style="background:#e8b34e"></i></dd></div>
+      <div><dt>Sedne</dt><dd>Lidové akci, jarmarku, bleším trhům — a hlavně plakátům a letákům</dd></div>
+      <div><dt>Pozor</dt><dd>Na delší texty (podmínky, recepty, pronájem) je to hlasité</dd></div>
+    </dl>
+  </div>
+
+  <div class="frame">
+    <div class="chrome"><i></i><i></i><i></i><span>dynovysvet.cz</span></div>
+    <div class="mk s4">
+      <header class="bar">
+        <span class="logo">Dýňový svět</span>
+        <nav><a href="#">Statek</a><a href="#">Blešák</a><a href="#">Recepty</a><a href="#">Kontakt</a></nav>
+        <a class="cta" href="#">Vstupenky</a>
+      </header>
+      <div class="poster">
+        <p class="top">Statek u Pipků · Nová Ves u Leštiny</p>
+        <div class="rule"><span>Sedmnáctý ročník</span></div>
+        <h1>Dýňový<b>svět</b></h1>
+        <p class="dates">20. září — 2. listopadu 2026</p>
+        <p class="txt">Sto padesát odrůd dýní, slámohrad, koně, kozy a stodola plná regálů.
+          Otevřeno středa až pátek 14—18, sobota, neděle a svátky 10—18.</p>
+        <a class="stub" href="#">Vstupenky online <i>120 Kč</i></a>
+        <div class="stamp">Vstup<br>i se psem<br>10 Kč</div>
+      </div>
+      <div class="halftone">
+        <figure><img src="/foto/dsc_0683-1000.webp" alt="Hromada dýní u cihlové zdi"><figcaption>Dvůr</figcaption></figure>
+        <figure><img src="/foto/kozlik-1000.webp" alt="Kůzle bere krmení z ruky"><figcaption>Zvířata</figcaption></figure>
+        <figure><img src="/foto/dsc_0256-1000.webp" alt="Děti na dřevěných atrakcích v zahradě"><figcaption>Zahrada</figcaption></figure>
+      </div>
+    </div>
+  </div>
+  <p class="note">Náhled ukazuje hlavičku, plakátovou úvodní obrazovku a pás fotek v jedné barvě.</p>
+</section>
+
+<!-- ═══════════════ 05 ═══════════════════════════════════════════════════ -->
+<section class="prop wrap">
+  <div class="prop-head">
+    <div>
+      <p class="prop-num">Návrh 05 / 06</p>
+      <h2>Slámohrad <span>— web pro rodiny s dětmi</span></h2>
+      <p>Nejveselejší z šesti. Plné barvy, kulaté hrany, velká tlačítka. Mluví na mámu,
+        která na mobilu hledá, kam v sobotu s dětmi — a do dvou vteřin musí vidět
+        cenu, čas a tlačítko. Prodává nejlíp, vypadá nejmíň výjimečně.</p>
+    </div>
+    <dl class="meta">
+      <div><dt>Písmo</dt><dd>Baloo 2 (kulaté nadpisy) + Instrument Sans</dd></div>
+      <div><dt>Barvy</dt><dd class="sw"><i style="background:#f2681f"></i><i style="background:#2f8b57"></i><i style="background:#fff1cf"></i><i style="background:#ffd280"></i><i style="background:#241f1a"></i></dd></div>
+      <div><dt>Sedne</dt><dd>Rodinám, školkám a školám; nejjednodušší na obsluhu</dd></div>
+      <div><dt>Pozor</dt><dd>Blíží se to vzhledu zábavních parků — statek působí méně opravdově</dd></div>
+    </dl>
+  </div>
+
+  <div class="frame">
+    <div class="chrome"><i></i><i></i><i></i><span>dynovysvet.cz</span></div>
+    <div class="mk s5">
+      <header class="bar">
+        <span class="logo">Dýňový svět</span>
+        <nav><a href="#">Co tu je</a><a href="#">Zvířata</a><a href="#">Školy</a><a href="#">Kontakt</a></nav>
+        <a class="cta" href="#">Koupit vstupenky</a>
+      </header>
+      <div class="hero">
+        <span class="blob b1" aria-hidden="true"></span><span class="blob b2" aria-hidden="true"></span>
+        <div>
+          <span class="pill">Otevřeno od 20. září</span>
+          <h1>Sto padesát dýní<br>a jeden <b>slámohrad</b></h1>
+          <p>Skákání ve slámě, kozy, které berou granule z ruky, a pole, kde si každý
+            najde tu svou dýni. Vstupenky na hodinu, kterou si vyberete.</p>
+          <div class="acts"><a class="p" href="#">Vybrat čas a koupit</a><a class="s" href="#">Co všechno tu je</a></div>
+        </div>
+        <div class="photo"><img src="/foto/dsc_0256-1000.webp" alt="Děti si hrají na dřevěných atrakcích v zahradě statku"></div>
+      </div>
+      <div class="cards">
+        <div><span class="ic" style="background:#ffd280"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1 0 4 2 2 0 0 1-2 2H5a2 2 0 0 1-2-2 2 2 0 0 0 0-4 2 2 0 0 1 0-4z" fill="none" stroke="#8a5a12" stroke-width="1.6"/><path d="M14 8v8" stroke="#8a5a12" stroke-width="1.6" stroke-dasharray="2 2.4"/></svg></span><h3>120 / 100 Kč</h3><p>Děti do dvou let zdarma, pes za desetikorunu.</p></div>
+        <div><span class="ic" style="background:#bfe3c6"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="14.5" r="4.2" fill="#2f6b45"/><circle cx="7.4" cy="8.6" r="2.1" fill="#2f6b45"/><circle cx="16.6" cy="8.6" r="2.1" fill="#2f6b45"/><circle cx="4.4" cy="13.4" r="1.8" fill="#2f6b45"/><circle cx="19.6" cy="13.4" r="1.8" fill="#2f6b45"/></svg></span><h3>Zvířata se jmény</h3><p>Koně Black a Natin, poník Princezna, kozy a kůzlata.</p></div>
+        <div><span class="ic" style="background:#ffc9a8"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="8.2" fill="none" stroke="#a8410f" stroke-width="1.7"/><path d="M12 7.4V12l3.4 2.2" fill="none" stroke="#a8410f" stroke-width="1.7" stroke-linecap="round"/></svg></span><h3>st–pá 14—18</h3><p>Sobota, neděle a svátky od desíti do šesti.</p></div>
+      </div>
+    </div>
+  </div>
+  <p class="note">Náhled ukazuje hlavičku, úvodní obrazovku a tři karty s tím, na co se lidé ptají první.</p>
+</section>
+
+<!-- ═══════════════ 06 ═══════════════════════════════════════════════════ -->
+<section class="prop wrap">
+  <div class="prop-head">
+    <div>
+      <p class="prop-num">Návrh 06 / 06</p>
+      <h2>Mřížka <span>— minimalistický web</span></h2>
+      <p>Bílá plocha, ostrá mřížka, jedno jediné oranžové místo. Žádná dekorace: pracuje
+        jen sazba, linky a odstup. Vypadá to jako web galerie nebo architekta — nejvíc
+        se to hodí, pokud chcete, aby web vypadal drahý a nadčasový.</p>
+    </div>
+    <dl class="meta">
+      <div><dt>Písmo</dt><dd>Archivo, jedno písmo ve třech řezech</dd></div>
+      <div><dt>Barvy</dt><dd class="sw"><i style="background:#ffffff"></i><i style="background:#111111"></i><i style="background:#e2521e"></i><i style="background:#e2e2e2"></i></dd></div>
+      <div><dt>Sedne</dt><dd>Pokud web má být především rychlý a přehledný nástroj</dd></div>
+      <div><dt>Pozor</dt><dd>Chladné. O podzimu a slámě to samo neřekne nic — musí to udělat fotky</dd></div>
+    </dl>
+  </div>
+
+  <div class="frame">
+    <div class="chrome"><i></i><i></i><i></i><span>dynovysvet.cz</span></div>
+    <div class="mk s6">
+      <header class="bar">
+        <span class="logo">Dýňový svět <i>/ Statek u Pipků</i></span>
+        <nav><a href="#">Statek</a><a href="#">Odrůdy</a><a href="#">Školy</a><a href="#">Pronájem</a></nav>
+        <a class="cta" href="#">Vstupenky</a>
+      </header>
+      <div class="grid">
+        <div class="hero">
+          <div>
+            <p class="lbl6">Sezóna 2026 / Vysočina</p>
+            <h1>dýňový<br><b>svět</b></h1>
+          </div>
+          <div>
+            <p>Pěstujeme dýně. Na podzim otevřeme dvůr, stodolu i zahradu a ukážeme vám,
+              kolik jich vlastně existuje.</p>
+            <p>Vstupenky jsou časované — kapacita na každou hodinu je vidět dopředu.</p>
+            <div class="acts"><a class="p" href="#">Vstupenky</a><a class="s" href="#">Odrůdy</a></div>
+          </div>
+        </div>
+        <div class="cols">
+          <figure><img src="/foto/dsc_0630-1000.webp" alt="Detail žlutého květu dýně mezi zelenými listy"></figure>
+          <div class="tbl">
+            <table>
+              <caption>Otevírací doba a vstupné</caption>
+              <tbody>
+                <tr><th>Středa — pátek</th><td>14:00 — 18:00</td></tr>
+                <tr><th>Sobota, neděle, svátky</th><td>10:00 — 18:00</td></tr>
+                <tr><th>Dospělí</th><td>120 Kč</td></tr>
+                <tr><th>Děti 2—15 let</th><td>100 Kč</td></tr>
+                <tr><th>Volno na 27. 9. ve 14:00</th><td>38 míst</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="note">Náhled ukazuje hlavičku, úvodní obrazovku a tabulku s otevírací dobou a živou kapacitou.</p>
+</section>
+
+<!-- ═══════════════ Konec ═══════════════════════════════════════════════ -->
+<section class="end wrap">
+  <p class="lbl">Jak dál</p>
+  <h2>Stačí říct číslo.</h2>
+  <ol>
+    <li><b>Vyberte jeden návrh</b> — nemusíte vybírat všechno. Klidně „čtyřka, ale fotky jako u dvojky".</li>
+    <li><b>Napíšeme, co to znamená v praxi</b> — kolik fotek bude potřeba, co se dá použít ze starého webu a co se musí nafotit.</li>
+    <li><b>Dotáhneme vybraný vzhled na všech stránkách</b> — vstupenky, odrůdy, školy, pronájem, recepty, blešák.</li>
+    <li><b>Až pak se sahá na texty a fotky</b> — vzhled se v té chvíli už nemění, jen se plní obsahem.</li>
+  </ol>
+  <p class="note" style="margin-top:26px">Náhledy jsou skutečný kód, ne obrázky — vybraný návrh se rozvíjí dál, nekreslí znovu.</p>
+</section>
+
+</body>
+</html>
