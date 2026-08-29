@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { LOCALES, DEFAULT_LOCALE } from "@/lib/i18n/config";
 import { ROUTE_KEYS, alternates, href, type RouteKey } from "@/lib/i18n/routes";
+import { isGateEnabled } from "@/lib/security/site-gate";
 
 const BASE = "https://www.dynovysvet.cz";
 
@@ -27,6 +28,10 @@ const WEIGHT: Record<RouteKey, [priority: number, freq: MetadataRoute.Sitemap[nu
 };
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  // Zamčený web nenabízí mapu adres. Statické soubory jdou mimo `src/proxy.ts`,
+  // takže by ji jinak dostal i ten, koho zámek nepustil na jedinou stránku.
+  if (isGateEnabled()) return [];
+
   const now = new Date();
 
   return ROUTE_KEYS.flatMap((key) => {
