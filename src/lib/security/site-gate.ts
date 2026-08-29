@@ -6,9 +6,11 @@
  * společné heslo pro všechny zvané, ne účty: účet by znamenal správu lidí,
  * kteří tu budou týden.
  *
- * Zapíná se **výhradně** proměnnou `SITE_PASSWORD`. Prázdná nebo chybějící
- * znamená otevřený web — to je stav po spuštění a nesmí jít nastavit omylem
- * (například tím, že se zapomene proměnná odebrat, se web zamkne, ne odemkne).
+ * Zámek je zapnutý sám od sebe: dokud se web nespustil, je zamčený i na
+ * nasazení, kde nikdo nic nenastavil. Heslo se řídí proměnnou
+ * `SITE_PASSWORD` — nenastavená znamená výchozí heslo z kódu, vyplněná
+ * přebíjí, a teprve prázdná (`SITE_PASSWORD=`) web otevře všem. Otevřít se
+ * tak dá jen vědomě; na prázdno proměnnou nikdo nenastaví omylem.
  *
  * Cookie nese podepsaný token, ne heslo. Klíč se odvozuje z hesla samotného
  * (SHA-256), takže **změna hesla okamžitě odhlásí všechny** — přesně to, co
@@ -42,9 +44,29 @@ export const GATE_TTL_SECONDS = 30 * 24 * 60 * 60;
 
 /* ------------------------------------------------------------------ heslo */
 
-/** Nastavené heslo, nebo `null`, když je web otevřený. */
+/**
+ * Výchozí heslo pro případ, že `SITE_PASSWORD` nikde není nastavené.
+ *
+ * V kódu, ne v proměnné: nasazení bez nastavené proměnné je přesně ten
+ * okamžik, kdy se rozdělaný web nesmí ukázat světu, a spoléhat se na to, že
+ * na někdo v nastavení projektu nezapomene, znamená spoléhat se na paměť.
+ * Nechrání se tu peníze ani cizí data, jen nedodělaný web — na ostré heslo
+ * stačí vyplnit `SITE_PASSWORD`.
+ */
+const DEFAULT_PASSWORD = 'dyne-7241';
+
+/**
+ * Platné heslo, nebo `null`, když je web otevřený.
+ *
+ * Jedna proměnná, tři stavy:
+ * - nenastavená → `DEFAULT_PASSWORD`, web je zamčený,
+ * - vyplněná → platí, co je v ní,
+ * - prázdná (`SITE_PASSWORD=`) → web je otevřený všem; to je stav po spuštění.
+ */
 export function sitePassword(): string | null {
-  const value = process.env.SITE_PASSWORD?.trim();
+  const raw = process.env.SITE_PASSWORD;
+  if (raw === undefined) return DEFAULT_PASSWORD;
+  const value = raw.trim();
   return value ? value : null;
 }
 

@@ -30,15 +30,17 @@ function setHeslo(value: string | undefined): void {
 afterEach(() => setHeslo(undefined));
 
 describe('zapnutí zámku', () => {
-  it('bez proměnné je web otevřený', () => {
+  it('bez proměnné je web zamčený výchozím heslem', () => {
     setHeslo(undefined);
-    assert.equal(isGateEnabled(), false);
-    assert.equal(sitePassword(), null);
+    assert.equal(isGateEnabled(), true);
+    // Konkrétní hodnota patří do kódu, ne do testu; podstatné je, že nějaká je.
+    assert.ok((sitePassword() ?? '').length > 0);
   });
 
-  it('prázdná proměnná ani samé mezery zámek nezapnou', () => {
+  it('prázdná proměnná ani samé mezery web otevřou', () => {
     setHeslo('');
     assert.equal(isGateEnabled(), false);
+    assert.equal(sitePassword(), null);
     setHeslo('   ');
     assert.equal(isGateEnabled(), false);
   });
@@ -62,7 +64,7 @@ describe('ověření hesla', () => {
   });
 
   it('na otevřeném webu neprojde žádné heslo, ani prázdné', async () => {
-    setHeslo(undefined);
+    setHeslo('');
     assert.equal(await passwordMatches(''), false);
     assert.equal(await passwordMatches(HESLO), false);
   });
@@ -99,7 +101,7 @@ describe('token v cookie', () => {
   it('na otevřeném webu se token nevydává a žádný neplatí', async () => {
     setHeslo(HESLO);
     const token = await issueGateToken();
-    setHeslo(undefined);
+    setHeslo('');
     assert.equal(await hasValidGateToken(token), false);
     await assert.rejects(() => issueGateToken());
   });

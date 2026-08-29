@@ -111,12 +111,18 @@ nástroj: hustší sazba, žádné ilustrace, čísla v tabulkových číslicíc
 ### Web zatím jen pro zvané
 
 Než se web spustí, nemá ho vidět kdokoli, kdo trefí adresu — ale majitel ho
-musí umět ukázat rodině, škole nebo tisku. Stačí na to jedna proměnná:
+musí umět ukázat rodině, škole nebo tisku. Zamčeno je proto samo od sebe,
+i tam, kde v nastavení projektu nikdo nic nevyplnil:
 
 ```bash
-SITE_PASSWORD="nejake-sdilene-heslo"   # zamčeno
+# nenastaveno                          # zamčeno výchozím heslem z kódu
+SITE_PASSWORD="nejake-sdilene-heslo"   # zamčeno tímhle heslem
 SITE_PASSWORD=""                       # otevřeno všem
 ```
+
+Výchozí heslo je `dyne-7241` a je v `src/lib/security/site-gate.ts`. Není to
+tajemství na peníze ani na cizí data, jen zábrana proti náhodnému
+návštěvníkovi rozdělaného webu; ostré heslo se nastaví proměnnou.
 
 - Zámek řeší `src/proxy.ts` (`gateCheck`) nad `src/lib/security/site-gate.ts`.
   Musí to být v proxy, ne v layoutu: veřejné stránky jsou statické, takže
