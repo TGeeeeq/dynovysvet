@@ -31,7 +31,6 @@ a poptávky jen padají do logu. Hodí se to na práci s designem.
 | `pnpm test` | testy (souběžnost rezervací, IBAN a SPAYD) |
 | `pnpm db:generate` | vygeneruje migraci z Drizzle schématu |
 | `pnpm db:push` | nahraje schéma do databáze |
-| `python3 scripts/gen-gourds.py` | přegeneruje siluety tykví |
 | `python3 scripts/grade-photos.py <soubory>` | grading fotek do `public/foto` |
 
 ## Jak to funguje uvnitř
@@ -129,21 +128,53 @@ nástroj: hustší sazba, žádné ilustrace, čísla v tabulkových číslicíc
 
 ## Designový systém
 
-Vizuální jazyk „Rytý herbář" — staré semenářské katalogy a herbáře.
-Ilustrace nejsou náhražka za chybějící fotky, jsou to ony samy.
+**Nosné médium je fotka ze statku.** Typografie kolem ní drží klid: papír,
+inkoust a jedna oranžová. Rytinové ilustrace odrůd, které tu byly dřív, jsou
+pryč — statek se prodává tím, jak vypadá, a kresba tykve to nikdy nedokáže
+tak jako snímek pole.
 
-**Pravidlo, na kterém to celé stojí: oranžová není nikdy velká výplň.**
-Je to inkoust na papíře — linky, značky, drobná sazba. Velké plochy jsou
-papír nebo noc.
+**Pravidlo, na kterém to stojí: oranžová není nikdy velká výplň.** Je to
+inkoust na papíře a světlo ve tmě. Velké plochy jsou papír, fotka nebo noc.
 
-- Barevné tokeny a písma: `src/app/globals.css`, `src/lib/design/fonts.ts`
-- Tykve: `scripts/gen-gourds.py` → `src/lib/illustrations/gourds.ts`.
-  Tělo je rotační plocha, žebra jsou poledníky rovnoměrné po délce — proto
-  se u okraje samy zahušťují a tvar čte trojrozměrně. **Needitovat ručně**,
-  je to generovaný soubor.
+- Barevné tokeny, písma, tlačítka, rámy fotek a odhalení při scrollu:
+  `src/app/globals.css`, `src/lib/design/fonts.ts`
+- Fotky: `src/content/photos.ts` (alt texty ve třech jazycích),
+  `src/components/ui/Figure.tsx` a `PhotoStrip.tsx`. Poměr stran určuje
+  vždycky místo, kam se fotka sází, ne fotka sama.
+- Odrůdy: `src/content/varieties.ts`. Zatím jde o **rejstřík**, ne galerii —
+  fotku každé odrůdy zvlášť nemáme a hromada dýní pod jménem konkrétní
+  odrůdy by byla nepravda. Až fotky dorazí, stačí u odrůdy doplnit
+  `photo: "nazev-souboru"` a `VarietyIndex` se sám přepne na fotografickou
+  mřížku. Layout se kvůli tomu nesahá.
 - Razítko (`src/components/site/Stamp.tsx`) překresluje skutečné gumové
   razítko statku. Není to nová značka, je to ta stávající.
 - Všechny animace respektují `prefers-reduced-motion`.
+
+### Úvodní animace
+
+`src/components/intro/` — překryv přes celou obrazovku, na kterém si
+návštěvník tahem myši nebo prstem vyřeže dýni. Když se řez uzavře, otvor se
+otevře a zevnitř se rozsvítí svíčka.
+
+- Hraje jen na titulní straně a **jednou za návštěvu** (`sessionStorage`).
+- O tom, jestli se vůbec hraje, rozhoduje **synchronní inline skript**
+  (`PumpkinIntro.tsx`) ještě před prvním vykreslením. Kdyby to řešil
+  `useEffect`, překryv by se na okamžik mihl i tomu, kdo ho dnes už viděl.
+  Skript sahá na `data-intro` na `<html>`, proto má layout
+  `suppressHydrationWarning`.
+- Výchozí stav překryvu je `display: none`. **Bez JavaScriptu se nestane
+  nic** — návštěvník nemá co přeskakovat a nic mu nezamkne scroll.
+- Nikdo tu nesmí uváznout: kdo netáhne, tomu se dýně po `IDLE_MS` dořeže
+  sama; „Přeskočit" je první prvek v pořadí tabulátoru; Escape zavírá;
+  a v inline skriptu je dvacetisekundová pojistka, která zámek scrollu
+  uvolní i kdyby se animace zasekla.
+- Při `prefers-reduced-motion: reduce` se nespustí vůbec. Vypnutá by z ní
+  zbyla jen nevyřezaná dýně přes celou obrazovku.
+- Animace běží imperativně přes `requestAnimationFrame` a zapisuje rovnou
+  do DOM. Přes React state by to znamenalo překreslit celý strom
+  šedesátkrát za sekundu kvůli jedné hodnotě `stroke-dashoffset`.
+- Geometrie dýně je v `pumpkin-art.ts`. Tvar dělají laloky, ne obrys —
+  obrys je klidný široký ovál a dýni z něj udělá teprve stínování rýh.
 
 Písma (Fraunces, Instrument Sans, JetBrains Mono) jsou ověřená na plnou
 českou diakritiku přes `latin-ext`. Při výměně písma to ověřte znovu —

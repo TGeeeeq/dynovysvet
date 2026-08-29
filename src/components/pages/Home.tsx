@@ -1,17 +1,18 @@
 import type { PageProps } from "./types";
 import { href } from "@/lib/i18n/routes";
 import Link from "next/link";
-import { GOURDS } from "@/lib/illustrations/gourds";
-import { GourdPlate } from "@/components/illustrations/Gourd";
-import { TornEdge } from "@/components/ui/TornEdge";
+import Image from "next/image";
+import { PumpkinIntro } from "@/components/intro/PumpkinIntro";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { PhotoStrip } from "@/components/ui/PhotoStrip";
+import { Figure } from "@/components/ui/Figure";
+import { VarietyIndex } from "@/components/ui/VarietyIndex";
 import { animalsFor, attractionsFor, FARM, practicalFor, rulesFor } from "@/content/farm";
-import { farmPhotos } from "@/content/photos";
+import { farmPhotos, photo } from "@/content/photos";
+import { varietiesFor } from "@/content/varieties";
 import { moodAt, nextPumpkinOpening } from "@/lib/season";
 import { HOME } from "@/content/copy/home";
 import { copyFor } from "@/content/copy/types";
-import { gourdName, gourdUse } from "@/content/gourdLabels";
 import { makeT } from "@/lib/i18n/dict";
 
 export function Home({ locale }: PageProps) {
@@ -21,108 +22,116 @@ export function Home({ locale }: PageProps) {
   const animals = animalsFor(locale);
   const practical = practicalFor(locale);
   const rules = rulesFor(locale);
+  const varieties = varietiesFor(locale);
   const now = new Date();
   const mood = moodAt(now);
   const opening = nextPumpkinOpening(now);
   const season = opening.getUTCFullYear();
 
+  const hero = photo("dsc_0278-0", locale);
+  const pyramids = photo("img_20180921_175330", locale);
+  const shelves = photo("dsc_0835-2", locale);
+
   return (
     <>
+      <PumpkinIntro locale={locale} />
+
       {/* ── Hero ─────────────────────────────────────────────────────────
-          Záměrně asymetrické. Vycentrovaný nadpis se dvěma tlačítky pod ním
-          je nejrychlejší cesta k tomu, aby web vypadal jako každý druhý. */}
-      <section className="relative overflow-clip">
-        <div className="mx-auto grid max-w-[88rem] items-center gap-10 px-5 pb-16 pt-10 sm:px-8 sm:pb-24 sm:pt-14 lg:grid-cols-[1.08fr_0.92fr]">
-          <div>
-            <p className="tabular text-[0.76rem] uppercase tracking-[0.34em] text-pumpkin">
-              {c("kicker")}
-            </p>
+          Fotka přes celou šířku, ne kresba vedle nadpisu. Statek se prodává
+          tím, jak vypadá — první, co má návštěvník vidět, je to místo.
 
-            <h1 className="font-display letterpress mt-5 text-[clamp(3.2rem,11vw,8.5rem)] font-semibold">
-              <span className="block">{c("titleTop")}</span>
-              <span className="block pl-[0.08em] text-pumpkin">{c("titleBottom")}</span>
-            </h1>
+          Snímek má prázdnou oblohu v horní části; text proto sedí dole,
+          kde je pod ním masa dýní, a nadpis nikomu neleží přes tvář. */}
+      <section className="relative isolate flex min-h-[32rem] items-end overflow-clip bg-night [height:clamp(32rem,84vh,52rem)]">
+        <Image
+          src={`/foto/${hero.base}-1600.webp`}
+          alt={hero.alt}
+          fill
+          priority
+          sizes="100vw"
+          className="kenburns -z-10 object-cover object-[center_52%]"
+        />
+        {/* Scrim. Bez něj je bílý text na obloze čitelný jen za hezkého počasí. */}
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgb(18_13_10/0.55)_0%,rgb(18_13_10/0.12)_32%,rgb(18_13_10/0.62)_74%,rgb(18_13_10/0.9)_100%)]"
+        />
 
-            <p className="mt-7 max-w-xl text-pretty text-xl leading-relaxed text-ink-soft">
-              {c("lead")}
-            </p>
+        <div className="mx-auto w-full max-w-[88rem] px-5 pb-14 pt-24 sm:px-8 sm:pb-20">
+          <p className="tabular text-[0.76rem] uppercase tracking-[0.34em] text-lantern">
+            {c("kicker")}
+          </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-4">
-              <Link
-                href={href("tickets", locale)}
-                className="rounded-full bg-ink px-7 py-3.5 text-paper transition-colors hover:bg-ember"
-              >
-                {mood.ticketsOpen ? t("buyTickets") : c("watchSeason").replace("{season}", String(season))}
-              </Link>
-              <Link
-                href={href("pumpkinWorld", locale)}
-                className="border-b-2 border-ink/25 py-1 text-ink transition-colors hover:border-pumpkin hover:text-pumpkin"
-              >
-                {c("whatYouSee")}
-              </Link>
-            </div>
-          </div>
+          <h1 className="font-display mt-5 max-w-4xl text-[clamp(3.4rem,12vw,9rem)] font-semibold text-paper-bright drop-shadow-[0_2px_30px_rgba(0,0,0,0.55)]">
+            <span className="block">{c("titleTop")}</span>
+            <span className="block pl-[0.08em] text-lantern">{c("titleBottom")}</span>
+          </h1>
 
-          {/* Hokaido jako první tabule almanachu. Sedí vedle nadpisu, ne pod
-              ním — jinak zůstane uprostřed hero sekce prázdné místo. */}
-          <div className="relative hidden justify-self-end lg:-mt-10 lg:block">
-            <GourdPlate gourd={GOURDS[0]} size={430} seed={3} className="text-ink" />
-            <figcaption className="absolute -bottom-4 left-4 max-w-56 border-l-2 border-pumpkin pl-3">
-              <p className="font-display text-lg font-semibold">{gourdName(GOURDS[0], locale)}</p>
-              <p className="tabular text-[0.72rem] text-ink-faint">{GOURDS[0].latin}</p>
-              <p className="mt-1 text-[0.86rem] text-ink-soft">{gourdUse(GOURDS[0], locale)}</p>
-            </figcaption>
+          <p className="mt-7 max-w-xl text-pretty text-lg leading-relaxed text-paper/85 sm:text-xl">
+            {c("lead")}
+          </p>
+
+          <div className="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
+            <Link href={href("tickets", locale)} className="btn btn-lantern">
+              {mood.ticketsOpen
+                ? t("buyTickets")
+                : c("watchSeason").replace("{season}", String(season))}
+            </Link>
+            <Link href={href("pumpkinWorld", locale)} className="link-rule text-paper/90">
+              {c("whatYouSee")}
+            </Link>
           </div>
         </div>
-
-        <TornEdge fill="var(--color-paper-deep)" />
       </section>
 
       {/* ── Sezóna ───────────────────────────────────────────────────────
-          Tři fakta, na která se lidé ptají první. Číslice v mono s tabulkovými
-          ciframi, aby se při změně nekývaly. */}
-      <section className="bg-paper-deep">
-        <div className="mx-auto grid max-w-[88rem] gap-px overflow-hidden px-5 pb-4 pt-6 sm:px-8 sm:pb-8 md:grid-cols-3">
+          Tři fakta, na která se lidé ptají první. Zůstávají ve tmě hned pod
+          hero fotkou — světlo se rozsvítí až na papíře pod nimi. */}
+      <section className="bg-night text-paper">
+        <div className="mx-auto grid max-w-[88rem] px-5 sm:px-8 md:grid-cols-3">
           {[
             { k: c("statSeason"), v: "20. 9. — 2. 11.", n: `${c("statSeasonNote")} ${season}` },
             { k: c("statOpen"), v: c("statOpenValue"), n: c("statOpenNote") },
             { k: c("statPrice"), v: c("statPriceValue"), n: c("statPriceNote") },
           ].map((x) => (
-            <div key={x.k} className="py-6 md:px-8 md:first:pl-0">
-              <p className="text-[0.72rem] uppercase tracking-[0.28em] text-ink-faint">{x.k}</p>
-              <p className="tabular mt-2 text-2xl font-medium text-ink">{x.v}</p>
-              <p className="mt-1 text-[0.9rem] text-ink-soft">{x.n}</p>
+            <div
+              key={x.k}
+              className="border-t border-paper/12 py-7 first:border-t-0 md:border-l md:border-t-0 md:px-9 md:first:border-l-0 md:first:pl-0"
+            >
+              <p className="text-[0.7rem] uppercase tracking-[0.3em] text-paper/45">{x.k}</p>
+              <p className="tabular mt-2.5 text-2xl font-medium text-lantern">{x.v}</p>
+              <p className="mt-1.5 text-[0.9rem] text-paper/65">{x.n}</p>
             </div>
           ))}
         </div>
-        <TornEdge fill="var(--color-paper)" flip />
       </section>
 
       {/* ── Co u nás je ──────────────────────────────────────────────────
           Nepravidelná mřížka: první položka je široká, ostatní se skládají
           kolem. Šest stejných karet v řadě je to, čemu se vyhýbáme. */}
-      <section className="mx-auto max-w-[88rem] px-5 py-24 sm:px-8">
-        <SectionHead
-          locale={locale}
-          plate="I"
-          title={c("doTitle")}
-          lead={c("doLead")}
-        />
+      <section className="mx-auto max-w-[88rem] px-5 py-24 sm:px-8 lg:py-32">
+        <div className="grid gap-12 lg:grid-cols-[1fr_0.85fr] lg:items-start">
+          <SectionHead locale={locale} plate="I" title={c("doTitle")} lead={c("doLead")} />
+          <Figure
+            photo={pyramids}
+            ratio="3 / 2"
+            sizes="(max-width: 1024px) 100vw, 40vw"
+            className="reveal"
+          />
+        </div>
 
-        <div className="mt-14 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-16 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:mt-20 lg:grid-cols-3">
           {attractions.map((a, i) => (
             <article
               key={a.title}
-              className={i === 0 ? "sm:col-span-2 lg:col-span-2" : undefined}
+              className={`reveal ${i === 0 ? "sm:col-span-2 lg:col-span-2" : ""}`}
             >
               <p className="tabular text-[0.72rem] text-pumpkin">
                 {String(i + 1).padStart(2, "0")}
               </p>
               <hr className="rule-hand my-3" />
               <h3
-                className={`font-display font-semibold ${
-                  i === 0 ? "text-3xl" : "text-2xl"
-                }`}
+                className={`font-display font-semibold ${i === 0 ? "text-3xl" : "text-2xl"}`}
               >
                 {a.title}
               </h3>
@@ -136,9 +145,9 @@ export function Home({ locale }: PageProps) {
           Po textové sekci potřebuje oko důkaz, že to místo doopravdy
           existuje. Fotky jsou z různých let a přístrojů, drží je pohromadě
           společný grading. */}
-      <section className="border-t-2 border-ink/12 bg-paper-deep/40 py-16">
+      <section className="border-y-2 border-ink/10 bg-paper-deep/45 pt-16 pb-10 lg:pt-20 lg:pb-14">
         <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
-          <p className="text-[0.74rem] uppercase tracking-[0.28em] text-ink-faint">
+          <p className="text-[0.74rem] uppercase tracking-[0.3em] text-ink-faint">
             {c("photosLabel")}
           </p>
         </div>
@@ -146,58 +155,48 @@ export function Home({ locale }: PageProps) {
       </section>
 
       {/* ── Odrůdy ───────────────────────────────────────────────────────
-          Herbář. Vodorovně scrollovatelný, protože tabulí přibývá s tím,
-          co zrovna pěstují. */}
-      <section className="border-y-2 border-ink/12 bg-paper-bright py-24">
+          Rejstřík, ne galerie. Fotku každé odrůdy zvlášť zatím nemáme a
+          hromada dýní pod jménem konkrétní odrůdy by byla nepravda; až
+          fotky dorazí, přepne se mřížka sama (`src/content/varieties.ts`). */}
+      <section className="bg-paper-bright py-24 lg:py-32">
         <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
-          <SectionHead
-          locale={locale}
-            plate="II"
-            title={c("varietiesTitle")}
-            lead={c("varietiesLead")}
+          <div className="grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+            <SectionHead
+              locale={locale}
+              plate="II"
+              title={c("varietiesTitle")}
+              lead={c("varietiesLead")}
+            />
+            <Figure
+              photo={shelves}
+              ratio="16 / 10"
+              sizes="(max-width: 1024px) 100vw, 46vw"
+              className="reveal"
+            />
+          </div>
+
+          <VarietyIndex
+            varieties={varieties}
+            labels={{ weight: c("weight"), use: c("goodFor") }}
+            className="mt-16 lg:mt-20"
           />
         </div>
-
-        <ul className="mt-14 flex snap-x snap-mandatory gap-8 overflow-x-auto px-5 pb-6 sm:px-8 [scrollbar-width:thin]">
-          {GOURDS.map((g, i) => (
-            <li
-              key={g.slug}
-              className="w-60 shrink-0 snap-start"
-              style={{ rotate: `${(i % 3) - 1 === 0 ? 0 : ((i % 3) - 1) * 0.5}deg` }}
-            >
-              <GourdPlate gourd={g} size={210} seed={i} className="text-ink" />
-              <hr className="rule-hand my-3" />
-              <h3 className="font-display text-xl font-semibold">{gourdName(g, locale)}</h3>
-              <p className="tabular text-[0.72rem] italic text-ink-faint">{g.latin}</p>
-              <dl className="mt-2 space-y-0.5 text-[0.88rem] text-ink-soft">
-                <div className="flex gap-2">
-                  <dt className="text-ink-faint">{c("weight")}</dt>
-                  <dd className="tabular">{g.weight}</dd>
-                </div>
-                <div>
-                  <dt className="sr-only">{c("goodFor")}</dt>
-                  <dd>{gourdUse(g, locale)}</dd>
-                </div>
-              </dl>
-            </li>
-          ))}
-        </ul>
       </section>
 
       {/* ── Zvířata ──────────────────────────────────────────────────────
           Jména jsou skutečná. Konkrétnost je nejsilnější důkaz, že tohle
           místo existuje. */}
-      <section className="mx-auto max-w-[88rem] px-5 py-24 sm:px-8">
+      <section className="mx-auto max-w-[88rem] px-5 py-24 sm:px-8 lg:py-32">
         <div className="grid gap-14 lg:grid-cols-[0.9fr_1.1fr]">
           <SectionHead
-          locale={locale}
+            locale={locale}
             plate="III"
             title={c("animalsTitle")}
             lead={c("animalsLead")}
           />
           <ul className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
             {animals.map((a) => (
-              <li key={a.name} className="border-l-2 border-ink/15 pl-4">
+              <li key={a.name} className="reveal border-l-2 border-ink/15 pl-4">
                 <p className="font-display text-xl font-semibold">{a.name}</p>
                 <p className="text-[0.78rem] uppercase tracking-[0.16em] text-pumpkin">
                   {a.kind}
@@ -212,8 +211,8 @@ export function Home({ locale }: PageProps) {
       {/* ── Praktické ────────────────────────────────────────────────────
           Definiční seznam, ne karty. Je to referenční informace, tak ať
           vypadá jako referenční informace. */}
-      <section className="border-t-2 border-ink/12 bg-paper-deep/50">
-        <div className="mx-auto max-w-[88rem] px-5 py-20 sm:px-8">
+      <section className="border-t-2 border-ink/10 bg-paper-deep/50">
+        <div className="mx-auto max-w-[88rem] px-5 py-20 sm:px-8 lg:py-24">
           <SectionHead locale={locale} plate="IV" title={c("beforeTitle")} />
           <dl className="mt-10 grid gap-x-12 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
             {practical.map((p) => (
@@ -233,27 +232,32 @@ export function Home({ locale }: PageProps) {
         </div>
       </section>
 
-      {/* ── Závěrečná výzva ──────────────────────────────────────────── */}
-      <section className="mx-auto max-w-[88rem] px-5 py-24 text-center sm:px-8">
-        <h2 className="font-display letterpress mx-auto max-w-3xl text-balance text-[clamp(2.2rem,6vw,4.2rem)] font-semibold">
-          {mood.ticketsOpen
-            ? c("ctaOpen")
-            : `${c("ctaClosedPrefix")} ${season} ${c("ctaClosedSuffix")}`}
-        </h2>
-        <p className="mx-auto mt-5 max-w-xl text-pretty text-lg text-ink-soft">
-          {mood.ticketsOpen ? c("ctaOpenLead") : c("ctaClosedLead")}
-        </p>
-        <div className="mt-9">
-          <Link
-            href={href("tickets", locale)}
-            className="inline-block rounded-full bg-pumpkin px-8 py-4 text-lg text-paper-bright transition-colors hover:bg-ember"
-          >
-            {mood.ticketsOpen ? c("ctaButtonOpen") : c("ctaButtonClosed")}
-          </Link>
+      {/* ── Závěrečná výzva ──────────────────────────────────────────────
+          Zase noc. Web končí tam, kde začal — a poslední, co má návštěvník
+          na obrazovce, je rozsvícené tlačítko. */}
+      <section className="relative isolate overflow-clip bg-night text-paper">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[36rem] w-[46rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(255_179_71/0.22),transparent)]"
+        />
+        <div className="mx-auto max-w-[88rem] px-5 py-28 text-center sm:px-8 lg:py-36">
+          <h2 className="font-display mx-auto max-w-3xl text-balance text-[clamp(2.2rem,6vw,4.4rem)] font-semibold text-paper-bright">
+            {mood.ticketsOpen
+              ? c("ctaOpen")
+              : `${c("ctaClosedPrefix")} ${season} ${c("ctaClosedSuffix")}`}
+          </h2>
+          <p className="mx-auto mt-5 max-w-xl text-pretty text-lg text-paper/70">
+            {mood.ticketsOpen ? c("ctaOpenLead") : c("ctaClosedLead")}
+          </p>
+          <div className="mt-10">
+            <Link href={href("tickets", locale)} className="btn btn-lantern text-lg">
+              {mood.ticketsOpen ? c("ctaButtonOpen") : c("ctaButtonClosed")}
+            </Link>
+          </div>
+          <p className="tabular mt-9 text-[0.84rem] text-paper/45">
+            {c("orCall")}: {FARM.phoneHuman}
+          </p>
         </div>
-        <p className="tabular mt-8 text-[0.84rem] text-ink-faint">
-          {c("orCall")}: {FARM.phoneHuman}
-        </p>
       </section>
     </>
   );

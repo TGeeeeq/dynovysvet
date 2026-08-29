@@ -165,6 +165,34 @@ export const dict = {
     de: "Die gesuchte Seite gibt es auf dem Hof nicht. Vielleicht ist sie umgezogen.",
   },
   backHome: { cs: "Zpátky na titulní stranu", en: "Back to the home page", de: "Zurück zur Startseite" },
+
+  /* -------------------------------------------------------------- odrůdy */
+  weightLabel: { cs: "Váha", en: "Weight", de: "Gewicht" },
+  goodForLabel: { cs: "Vhodná na", en: "Good for", de: "Geeignet für" },
+
+  /* ------------------------------------------------------------- intro */
+  introHint: {
+    cs: "Táhněte po dýni a vyřežte ji",
+    en: "Drag across the pumpkin to carve it",
+    de: "Über den Kürbis ziehen und schnitzen",
+  },
+  introHintTouch: {
+    cs: "Přejeďte prstem po dýni",
+    en: "Swipe across the pumpkin",
+    de: "Mit dem Finger über den Kürbis wischen",
+  },
+  introSkip: { cs: "Přeskočit", en: "Skip", de: "Überspringen" },
+  introTitle: { cs: "Dýňový svět", en: "Pumpkin World", de: "Kürbiswelt" },
+  introSub: {
+    cs: "Statek u Pipků — Nová Ves u Leštiny",
+    en: "Statek u Pipků — Nová Ves u Leštiny, Czechia",
+    de: "Statek u Pipků — Nová Ves u Leštiny, Tschechien",
+  },
+  introLabel: {
+    cs: "Úvodní animace — vyřezávání dýně",
+    en: "Intro animation — carving a pumpkin",
+    de: "Intro-Animation — Kürbisschnitzen",
+  },
 } as const satisfies Record<string, Entry>;
 
 export type DictKey = keyof typeof dict;

@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { fontVariables } from "@/lib/design/fonts";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { VineSpine } from "@/components/illustrations/Vine";
 import { FarmJsonLd } from "@/components/site/StructuredData";
 import { MobileTicketBar } from "@/components/site/MobileTicketBar";
 import { FARM } from "@/content/farm";
@@ -49,7 +48,14 @@ export default async function SiteLayout({ children, params }: LayoutProps<"/[lo
   const t = makeT(locale);
 
   return (
-    <html lang={HTML_LANG[locale]} className={`${fontVariables} h-full antialiased`}>
+    // `suppressHydrationWarning`: inline skript úvodní animace nasadí na
+    // `<html>` atribut `data-intro` ještě před hydratací. Je to jediný cizí
+    // zásah do tohohle elementu a bez potlačení by React hlásil neshodu.
+    <html
+      lang={HTML_LANG[locale]}
+      className={`${fontVariables} h-full antialiased`}
+      suppressHydrationWarning
+    >
       <body className="grain relative flex min-h-full flex-col overflow-x-clip pb-[env(safe-area-inset-bottom)]">
         <a
           href="#obsah"
@@ -57,10 +63,6 @@ export default async function SiteLayout({ children, params }: LayoutProps<"/[lo
         >
           {t("skipToContent")}
         </a>
-        {/* Úponek běží celou stránkou jako svislá páteř — ale jen tam, kde je
-            vedle obsahu skutečně volný okraj. Přes text by to byla čmára.
-            `left` ho zarovná těsně vlevo od kontejneru o šířce 88rem. */}
-        <VineSpine className="pointer-events-none absolute top-44 hidden w-20 left-[max(0.25rem,calc(50%-49rem))] min-[1560px]:block" />
         <FarmJsonLd locale={locale} />
         <Header locale={locale} />
         <main id="obsah" className="flex-1">

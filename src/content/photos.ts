@@ -85,6 +85,48 @@ const FARM_SRC: readonly PhotoSource[] = [
     width: W, height: H32,
   },
   {
+    base: "dsc_0246",
+    alt: {
+      cs: "Dýňové pole až k lesu na obzoru, mezi zvadlými listy leží stovky oranžových dýní.",
+      en: "A pumpkin field stretching to the forest on the horizon, hundreds of orange pumpkins lying among withered leaves.",
+      de: "Ein Kürbisfeld bis zum Wald am Horizont, Hunderte orangefarbener Kürbisse zwischen welkem Laub.",
+    },
+    caption: {
+      cs: "Pole nad statkem pár dní před sklizní.",
+      en: "The field above the farm a few days before harvest.",
+      de: "Das Feld über dem Hof, wenige Tage vor der Ernte.",
+    },
+    width: W, height: H32,
+  },
+  {
+    base: "dsc_0628",
+    alt: {
+      cs: "Zelená pruhovaná dýně dozrává mezi velkými listy, nad ní rozkvetlý žlutý květ.",
+      en: "A green striped pumpkin ripening among large leaves, a yellow flower open above it.",
+      de: "Ein grün gestreifter Kürbis reift zwischen großen Blättern, darüber eine offene gelbe Blüte.",
+    },
+    caption: {
+      cs: "Květ i plod na jedné rostlině — konec srpna.",
+      en: "Flower and fruit on one plant — the end of August.",
+      de: "Blüte und Frucht an einer Pflanze — Ende August.",
+    },
+    width: W, height: H32,
+  },
+  {
+    base: "dsc_0272",
+    alt: {
+      cs: "Čtyři valníky plné oranžových dýní stojí na louce před statkem, vedle vzrostlý strom.",
+      en: "Four trailers full of orange pumpkins standing on the meadow in front of the farm, a mature tree beside them.",
+      de: "Vier mit orangefarbenen Kürbissen beladene Anhänger stehen auf der Wiese vor dem Hof, daneben ein alter Baum.",
+    },
+    caption: {
+      cs: "Sklizeň čeká na vyložení.",
+      en: "The harvest waiting to be unloaded.",
+      de: "Die Ernte wartet aufs Abladen.",
+    },
+    width: W, height: H32,
+  },
+  {
     base: "img_20220930_135433_resized_20220930_020105510",
     alt: {
       cs: "Traktor táhne dva valníky naložené oranžovými dýněmi po poli.",
@@ -207,6 +249,42 @@ const FOREST_SRC: readonly PhotoSource[] = [
 ] as const;
 
 /**
+ * Snímky, které se sázejí samostatně — hero, předěly, velké výřezy. Nejsou
+ * v žádném pásu, protože fotka přes celou šířku a fotka v karuselu chtějí
+ * každá jiný kompoziční prostor.
+ */
+const SOLO_SRC: readonly PhotoSource[] = [
+  {
+    base: "dsc_0278-0",
+    alt: {
+      cs: "Dýňové pole až k obzoru pod modrou oblohou s roztrhanými mraky, tisíce oranžových dýní.",
+      en: "A pumpkin field reaching the horizon under a blue sky with broken cloud, thousands of orange pumpkins.",
+      de: "Ein Kürbisfeld bis zum Horizont unter blauem Himmel mit aufgerissenen Wolken, Tausende orangefarbener Kürbisse.",
+    },
+    caption: {
+      cs: "Pole u Nové Vsi na konci září.",
+      en: "The field at Nová Ves at the end of September.",
+      de: "Das Feld bei Nová Ves Ende September.",
+    },
+    width: W, height: H32,
+  },
+  {
+    base: "img_20180921_175330",
+    alt: {
+      cs: "Tři pyramidy poskládané z dýní a slámy ve večerním slunci, před nimi stojí strakatý poník.",
+      en: "Three pyramids built from pumpkins and straw in the evening sun, a piebald pony standing in front of them.",
+      de: "Drei Pyramiden aus Kürbissen und Stroh in der Abendsonne, davor steht ein geschecktes Pony.",
+    },
+    caption: {
+      cs: "Pyramidy se staví každý rok znovu. Poník na to dohlíží.",
+      en: "The pyramids are built again every year. The pony supervises.",
+      de: "Die Pyramiden werden jedes Jahr neu gebaut. Das Pony beaufsichtigt das.",
+    },
+    width: W, height: H43,
+  },
+] as const;
+
+/**
  * Alt texty existují ve všech třech jazycích. Popisek toho, co je na fotce
  * vidět, je informace jako každá jiná — česká čtečka obrazovky nemá číst
  * anglickou větu a naopak.
@@ -224,3 +302,18 @@ function localise(list: readonly PhotoSource[], locale: Locale): Photo[] {
 export const farmPhotos = (locale: Locale) => localise(FARM_SRC, locale);
 export const venuePhotos = (locale: Locale) => localise(VENUE_SRC, locale);
 export const forestPhotos = (locale: Locale) => localise(FOREST_SRC, locale);
+
+const ALL_SRC: readonly PhotoSource[] = [...FARM_SRC, ...VENUE_SRC, ...FOREST_SRC, ...SOLO_SRC];
+
+/**
+ * Jedna konkrétní fotka podle názvu souboru — pro místa, kam se sází ručně
+ * vybraný snímek (hero, předěly sekcí), ne celý pás.
+ *
+ * Vyhazuje výjimku, ne `undefined`. Překlep v názvu souboru se má projevit
+ * při buildu, ne dírou ve stránce na produkci.
+ */
+export function photo(base: string, locale: Locale): Photo {
+  const src = ALL_SRC.find((p) => p.base === base);
+  if (!src) throw new Error(`Fotka „${base}" v src/content/photos.ts není.`);
+  return localise([src], locale)[0];
+}

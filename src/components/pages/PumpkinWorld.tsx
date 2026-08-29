@@ -3,14 +3,15 @@ import { href } from "@/lib/i18n/routes";
 import Link from "next/link";
 import { SectionHead } from "@/components/ui/SectionHead";
 import { TornEdge } from "@/components/ui/TornEdge";
-import { GourdPlate } from "@/components/illustrations/Gourd";
-import { GOURD_BY_SLUG, GOURDS } from "@/lib/illustrations/gourds";
+import { Figure } from "@/components/ui/Figure";
+import { VarietyIndex } from "@/components/ui/VarietyIndex";
+import { photo } from "@/content/photos";
+import { varietiesFor } from "@/content/varieties";
 import { animalsFor, attractionsFor, FARM, practicalFor, rulesFor } from "@/content/farm";
 import { TICKET_TYPES } from "@/lib/tickets/schedule";
 import { nextPumpkinOpening } from "@/lib/season";
 import { PUMPKIN_WORLD, PW_HOURS } from "@/content/copy/pumpkinWorld";
 import { copyFor } from "@/content/copy/types";
-import { gourdName, gourdUse } from "@/content/gourdLabels";
 import { makeT } from "@/lib/i18n/dict";
 
 
@@ -22,6 +23,8 @@ export function PumpkinWorld({ locale }: PageProps) {
   const practical = practicalFor(locale);
   const rules = rulesFor(locale);
   const season = nextPumpkinOpening(new Date()).getUTCFullYear();
+  const varieties = varietiesFor(locale);
+  const gate = photo("dsc_0683", locale);
 
   return (
     <>
@@ -40,21 +43,25 @@ export function PumpkinWorld({ locale }: PageProps) {
             <div className="mt-8 flex flex-wrap items-center gap-4">
               <Link
                 href={href("tickets", locale)}
-                className="rounded-full bg-ink px-7 py-3.5 text-paper transition-colors hover:bg-ember"
+                className="btn btn-solid"
               >
                 {c("pickDate")}
               </Link>
               <Link
                 href={href("schools", locale)}
-                className="border-b-2 border-ink/25 py-1 transition-colors hover:border-pumpkin hover:text-pumpkin"
+                className="link-rule"
               >
                 {c("schoolLink")}
               </Link>
             </div>
           </div>
-          <div className="hidden justify-self-center lg:block">
-            <GourdPlate gourd={GOURD_BY_SLUG.muskatova} size={360} seed={2} className="text-ink" />
-          </div>
+          <Figure
+            photo={gate}
+            ratio="4 / 3"
+            sizes="(max-width: 1024px) 100vw, 44vw"
+            priority
+            showCaption={false}
+          />
         </div>
       </section>
 
@@ -138,31 +145,24 @@ export function PumpkinWorld({ locale }: PageProps) {
       <section className="border-y-2 border-ink/12 bg-paper-bright py-24">
         <div className="mx-auto max-w-[88rem] px-5 sm:px-8">
           <SectionHead
-          locale={locale}
+            locale={locale}
             plate="II"
             title={c("varietiesTitle")}
             lead={c("varietiesLead")}
           />
+          <VarietyIndex
+            varieties={varieties}
+            labels={{ weight: t("weightLabel"), use: t("goodForLabel") }}
+            className="mt-14"
+          />
         </div>
-        <ul className="mt-14 flex snap-x snap-mandatory gap-8 overflow-x-auto px-5 pb-6 sm:px-8">
-          {GOURDS.map((g, i) => (
-            <li key={g.slug} className="w-56 shrink-0 snap-start">
-              <GourdPlate gourd={g} size={196} seed={i + 4} className="text-ink" />
-              <hr className="rule-hand my-3" />
-              <h3 className="font-display text-lg font-semibold">{gourdName(g, locale)}</h3>
-              <p className="tabular text-[0.7rem] italic text-ink-faint">{g.latin}</p>
-              <p className="tabular mt-1 text-[0.82rem] text-ink-soft">{g.weight}</p>
-              <p className="text-[0.86rem] text-ink-soft">{gourdUse(g, locale)}</p>
-            </li>
-          ))}
-        </ul>
       </section>
 
       {/* ── Zvířata ─────────────────────────────────────────────────── */}
       <section className="mx-auto max-w-[88rem] px-5 py-24 sm:px-8">
         <div className="grid gap-14 lg:grid-cols-[0.85fr_1.15fr]">
           <SectionHead
-          locale={locale}
+            locale={locale}
             plate="III"
             title={c("animalsTitle")}
             lead={c("animalsLead")}
@@ -206,7 +206,7 @@ export function PumpkinWorld({ locale }: PageProps) {
         </p>
         <Link
           href={href("tickets", locale)}
-          className="mt-8 inline-block rounded-full bg-pumpkin px-8 py-4 text-lg text-paper-bright transition-colors hover:bg-ember"
+          className="btn btn-pumpkin mt-8 text-lg"
         >
           {t("buyTickets")}
         </Link>

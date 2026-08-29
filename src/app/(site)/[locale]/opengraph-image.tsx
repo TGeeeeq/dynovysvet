@@ -1,15 +1,17 @@
 import { ImageResponse } from "next/og";
-import { GOURDS } from "@/lib/illustrations/gourds";
 import { SEO } from "@/content/seo";
 import { DEFAULT_LOCALE, isLocale, LOCALES } from "@/lib/i18n/config";
 
 /**
  * Náhledový obrázek pro Facebook a sdílené odkazy.
  *
- * Statek žije z Facebooku — sdílený odkaz bez obrázku tam vypadá jako
- * spam a proklik na něj skoro nikdo neudělá. Obrázek se generuje při
- * buildu z týchž dat jako web (tabule odrůdy, barvy, texty), takže se
- * nemůže rozejít s obsahem a nikdo ho nemusí ručně překreslovat.
+ * Statek žije z Facebooku — sdílený odkaz bez obrázku tam vypadá jako spam
+ * a proklik na něj skoro nikdo neudělá. Obrázek se generuje při buildu
+ * z týchž dat jako web, takže se s obsahem nemůže rozejít.
+ *
+ * Je to noc se světlem, ne papír: v proudu příspěvků na Facebooku svítí
+ * tmavá karta s teplým světlem víc než béžová. Fotku sem nedáváme —
+ * snímky ze statku jsou ve WebP a Satori si s ním neporadí.
  *
  * Vlastní písmo záměrně nenačítáme: Satori by kvůli němu musel při buildu
  * sáhnout na síť a jediné, co by to zlepšilo, je tvar písmen na náhledu.
@@ -22,16 +24,14 @@ export function generateStaticParams() {
   return LOCALES.map((locale) => ({ locale }));
 }
 
+const NIGHT = "#120d0a";
+const LANTERN = "#ffb347";
 const PAPER = "#f4ebdc";
-const INK = "#1c1814";
-const PUMPKIN = "#c25a22";
-const INK_SOFT = "#4a4038";
 
 export default async function Image({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: raw } = await params;
   const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
   const seo = SEO.home[locale];
-  const gourd = GOURDS[0];
 
   return new ImageResponse(
     (
@@ -40,68 +40,64 @@ export default async function Image({ params }: { params: Promise<{ locale: stri
           width: "100%",
           height: "100%",
           display: "flex",
-          background: PAPER,
-          color: INK,
+          flexDirection: "column",
+          justifyContent: "space-between",
+          background: NIGHT,
+          color: PAPER,
           padding: 72,
-          alignItems: "center",
-          gap: 48,
+          // Světlo svíčky zprava dole — stejný motiv jako úvodní animace webu.
+          backgroundImage:
+            "radial-gradient(700px 520px at 88% 108%, rgba(255,150,46,0.42) 0%, rgba(255,150,46,0) 70%)",
         }}
       >
-        <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
+        <div style={{ display: "flex", flexDirection: "column" }}>
           <div
             style={{
               fontSize: 22,
               letterSpacing: 6,
               textTransform: "uppercase",
-              color: PUMPKIN,
+              color: LANTERN,
             }}
           >
             Nová Ves u Leštiny · Vysočina
           </div>
           <div
             style={{
-              marginTop: 26,
-              fontSize: 74,
+              marginTop: 28,
+              fontSize: 88,
               fontWeight: 700,
-              lineHeight: 1.03,
-              letterSpacing: -2,
+              lineHeight: 1.02,
+              letterSpacing: -3,
+              maxWidth: 900,
             }}
           >
             {seo.title.split(" — ")[0]}
           </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
           <div
             style={{
-              marginTop: 26,
               fontSize: 27,
               lineHeight: 1.42,
-              color: INK_SOFT,
-              maxWidth: 620,
+              color: "rgba(244,235,220,0.72)",
+              maxWidth: 760,
             }}
           >
             {seo.description}
           </div>
           <div
             style={{
-              marginTop: "auto",
-              paddingTop: 34,
-              borderTop: `2px solid ${INK}22`,
+              marginTop: 34,
+              paddingTop: 26,
+              borderTop: "2px solid rgba(244,235,220,0.16)",
               fontSize: 22,
-              color: INK_SOFT,
+              color: "rgba(244,235,220,0.55)",
             }}
           >
             dynovysvet.cz
           </div>
         </div>
-
-        {/* Tabule odrůdy — stejná kresba jako na webu, jen bez šrafury. */}
-        <svg width="400" height="400" viewBox="-70 -70 140 140">
-          <g fill="none" stroke={INK} strokeWidth="1.6" strokeLinecap="round">
-            <path d={gourd.outline} />
-            {gourd.ribs.map((d, i) => (
-              <path key={i} d={d} strokeWidth="0.9" opacity="0.65" />
-            ))}
-          </g>
-        </svg>
       </div>
     ),
     size,

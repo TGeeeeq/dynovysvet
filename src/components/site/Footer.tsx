@@ -20,7 +20,7 @@ export function Footer({ locale }: { locale: Locale }) {
   const t = makeT(locale);
 
   return (
-    <footer className="mt-32 border-t-2 border-ink/15 bg-paper-deep/60">
+    <footer className="border-t-2 border-ink/15 bg-paper-deep/60">
       <div className="mx-auto grid max-w-[88rem] gap-12 px-5 py-16 sm:px-8 lg:grid-cols-[auto_1fr_1fr_1fr]">
         <div className="max-w-56">
           <Stamp size={92} className="text-ink/80" />

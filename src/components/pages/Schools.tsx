@@ -3,9 +3,8 @@ import { SectionHead } from "@/components/ui/SectionHead";
 import { TornEdge } from "@/components/ui/TornEdge";
 import { InquiryForm } from "@/components/ui/InquiryForm";
 import { PhotoStrip } from "@/components/ui/PhotoStrip";
-import { forestPhotos } from "@/content/photos";
-import { GourdPlate } from "@/components/illustrations/Gourd";
-import { GOURD_BY_SLUG } from "@/lib/illustrations/gourds";
+import { Figure } from "@/components/ui/Figure";
+import { forestPhotos, photo } from "@/content/photos";
 import { FARM } from "@/content/farm";
 import {
   SCHOOLS,
@@ -19,6 +18,7 @@ import { makeT } from "@/lib/i18n/dict";
 export function Schools({ locale }: PageProps) {
   const c = copyFor(SCHOOLS, locale);
   const t = makeT(locale);
+  const flower = photo("dsc_0628", locale);
 
   return (
     <>
@@ -35,9 +35,12 @@ export function Schools({ locale }: PageProps) {
               {c("lead")}
             </p>
           </div>
-          <div className="hidden justify-self-center lg:block">
-            <GourdPlate gourd={GOURD_BY_SLUG.patison} size={300} seed={6} className="text-moss" />
-          </div>
+          <Figure
+            photo={flower}
+            ratio="4 / 3"
+            sizes="(max-width: 1024px) 100vw, 40vw"
+            priority
+          />
         </div>
       </section>
 

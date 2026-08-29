@@ -1,8 +1,8 @@
 import type { PageProps } from "./types";
 import { SlotPicker, type DayView } from "@/components/tickets/SlotPicker";
 import { SectionHead } from "@/components/ui/SectionHead";
-import { GourdPlate } from "@/components/illustrations/Gourd";
-import { GOURDS } from "@/lib/illustrations/gourds";
+import { Figure } from "@/components/ui/Figure";
+import { photo } from "@/content/photos";
 import { planSeason, SEASON_2026 } from "@/lib/tickets/schedule";
 import { moodAt, nextPumpkinOpening } from "@/lib/season";
 import { FARM } from "@/content/farm";
@@ -34,21 +34,25 @@ export async function Tickets({ locale }: PageProps) {
   const season = nextPumpkinOpening(now).getUTCFullYear();
   const days = await loadDays();
   const c = copyFor(TICKETS, locale);
+  const gate = photo("dsc_0285", locale);
 
   return (
     <div className="mx-auto max-w-[88rem] px-5 py-16 sm:px-8">
-      <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-start">
+      <div className="grid gap-10 lg:grid-cols-[1fr_15rem] lg:items-start">
         <SectionHead
           locale={locale}
           plate="I"
           title={`${c("titlePrefix")} ${season}`}
           lead={c("lead")}
         />
-        <GourdPlate
-          gourd={GOURDS[2]}
-          size={170}
-          seed={5}
-          className="hidden text-ink lg:block"
+        {/* Fotka je tu jen jako teplo. Stránka s vstupenkami má být hlavně
+            přehledná — proto malá, bez popisku a až za nadpisem. */}
+        <Figure
+          photo={gate}
+          ratio="1 / 1"
+          sizes="15rem"
+          showCaption={false}
+          className="hidden lg:block"
         />
       </div>
 
