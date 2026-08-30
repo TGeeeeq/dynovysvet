@@ -563,10 +563,10 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .af-spin-slow {
-    animation: af-spin 34s linear infinite;
+    animation: af-spin 18s linear infinite;
   }
   .af-spin-rev {
-    animation: af-spin-rev 27s linear infinite;
+    animation: af-spin-rev 14s linear infinite;
   }
 }
 
