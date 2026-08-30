@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 import { Stamp } from "@/components/site/Stamp";
+import { AFLogo } from "@/components/site/AFLogo";
 import { GateForm } from "@/components/site/GateForm";
-import { FARM } from "@/content/farm";
 import {
   GATE_COOKIE,
   RETURN_PARAM,
@@ -44,20 +44,24 @@ export default async function GatePage({ searchParams }: PageProps<"/vstup">) {
 
         <GateForm target={target} />
 
-        <p className="mt-10 text-center text-[0.84rem] leading-relaxed text-ink-faint">
-          Heslo nemáte? Zavolejte na{" "}
-          <a href={`tel:${FARM.phone}`} className="underline decoration-ink/25 underline-offset-4">
-            {FARM.phoneHuman}
-          </a>{" "}
-          nebo napište na{" "}
-          <a href={`mailto:${FARM.email}`} className="underline decoration-ink/25 underline-offset-4">
-            {FARM.email}
-          </a>
-          .
-        </p>
-        <p lang="en" className="mt-4 text-center text-[0.8rem] text-ink-faint/85">
+        <p lang="en" className="mt-10 text-center text-[0.8rem] text-ink-faint/85">
           The site is not open to the public yet. Enter the password to continue.
         </p>
+
+        <div className="mt-10 flex justify-center">
+          <a
+            href="https://www.antoninfigueroa.cz"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Web vytvořil Antonín Figueroa"
+            className="group inline-flex"
+          >
+            <AFLogo
+              size={44}
+              className="ring-1 ring-[#d4a45a]/20 transition duration-500 ease-out group-hover:scale-105 group-hover:ring-[#d4a45a]/45 group-hover:shadow-[0_0_22px_rgba(212,164,90,0.28)]"
+            />
+          </a>
+        </div>
       </div>
     </main>
   );
