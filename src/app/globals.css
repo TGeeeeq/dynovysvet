@@ -540,6 +540,36 @@
   }
 }
 
+/* --- Podpis autora webu ------------------------------------------------ */
+/* Prstence monogramu AF v patičce. `transform-box: view-box` drží střed
+   otáčení v (50,50) viewBoxu — bez něj by prstence kroužily mimo osu. */
+.af-spin-slow,
+.af-spin-rev {
+  transform-box: view-box;
+  transform-origin: 50% 50%;
+}
+
+@keyframes af-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes af-spin-rev {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .af-spin-slow {
+    animation: af-spin 34s linear infinite;
+  }
+  .af-spin-rev {
+    animation: af-spin-rev 27s linear infinite;
+  }
+}
+
 /* --- Přístupnost ------------------------------------------------------- */
 /* Každá animace na webu se tímto vypne. Obsah musí zůstat plně čitelný.
    Úvodní animace se při `reduce` nespustí vůbec — vypnutá by z ní zbyla

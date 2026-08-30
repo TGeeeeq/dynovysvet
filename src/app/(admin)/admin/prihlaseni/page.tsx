@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getAdminSession } from "@/lib/admin/session";
 import { Stamp } from "@/components/site/Stamp";
+import { AFLogo } from "@/components/site/AFLogo";
 import { LoginForm } from "@/components/admin/LoginForm";
 
 export const metadata = { title: "Přihlášení" };
@@ -22,10 +23,20 @@ export default async function LoginPage() {
 
         <LoginForm />
 
-        <p className="mt-10 text-center text-[0.82rem] text-ink-faint">
-          Heslo jste zapomněli? Zavolejte tomu, kdo web spravuje — z bezpečnostních
-          důvodů se nedá obnovit e-mailem.
-        </p>
+        <div className="mt-10 flex justify-center">
+          <a
+            href="https://www.antoninfigueroa.cz"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Web vytvořil Antonín Figueroa"
+            className="group inline-flex"
+          >
+            <AFLogo
+              size={38}
+              className="ring-1 ring-[#d4a45a]/20 transition duration-500 ease-out group-hover:scale-105 group-hover:ring-[#d4a45a]/45 group-hover:shadow-[0_0_22px_rgba(212,164,90,0.28)]"
+            />
+          </a>
+        </div>
       </div>
     </main>
   );
